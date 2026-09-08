@@ -72,11 +72,16 @@ subscription (Pro works; Max is safer for Lesson 2's research), Python
 3, Google Chrome, a free ChatGPT account, and about three hours. No
 design tools, no API keys, no paid image or video accounts.
 
-Image and video generation in Lessons 6, 8 and 10 run on the **free
+Image and video generation in Lessons 6, 8 and 10 runs on the **free
 path**: the gate prints a paste-ready prompt, you generate in ChatGPT
 (free) — ChatGPT for images, ChatGPT/Sora for video — download the
 result, and drop it in the repo. Free tiers have daily limits; if you
 hit one, the lesson picks up where it left off the next day.
+
+**Optional pro engine:** if you have a Higgsfield account with credits,
+every gated build can instead run automatically (`--engine
+higgsfield`), and its `seedance` image-to-video is the strongest option
+for hero motion. Free stays the default; nothing in the course needs it.
 
 ---
 

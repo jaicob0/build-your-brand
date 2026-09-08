@@ -5,6 +5,10 @@ Usage:
   python3 scripts/approval_gate.py <brief.json>                 # in YOUR terminal: prompts you
   python3 scripts/approval_gate.py --decision y <brief.json>    # after you typed y to Claude
   python3 scripts/approval_gate.py --decision n <brief.json>    # after you typed anything else
+  python3 scripts/approval_gate.py --decision y --engine higgsfield <brief.json>
+                                                                # optional pro engine: automated
+                                                                # build via the Higgsfield CLI
+                                                                # (spends real credits)
 
 How the gate holds:
   - In a real terminal with no --decision, it prints the brief and asks
@@ -14,23 +18,28 @@ How the gate holds:
     --decision included, before it runs; only a human can allow it
     (.claude/settings.json lists this script under "ask").
   - Piped stdin is refused. `echo y | approval_gate.py` writes no record.
-  - On y it prints a paste-ready prompt for ChatGPT and records the
-    approval; you generate the asset yourself (free, no credits spent),
-    save it to records/assets/inbox/<brief_id>.<ext>, then run
-    scripts/collect_asset.py to verify, install and record it. Nothing
-    is ever generated automatically and nothing is ever spent.
+  - On y with the default free engine it prints a paste-ready prompt for
+    ChatGPT and records the approval; you generate the asset yourself
+    (free, no credits spent), save it to records/assets/inbox/<brief_id>.<ext>,
+    then run scripts/collect_asset.py to verify, install and record it.
+  - On y with --engine higgsfield it runs scripts/hephaestus_build.py, which
+    builds via the Higgsfield CLI (real credits) and downloads the asset.
+    Direct calls to hephaestus_build.py are denied in .claude/settings.json,
+    so the gate and its record wrap every build on either engine.
 
 Record file: records/runs/<brief_id>-<timestamp>.json
 """
 from __future__ import annotations
 import argparse
 import json
+import subprocess
 import sys
 import datetime as dt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNS_DIR = ROOT / "records" / "runs"
+BUILD_SCRIPT = ROOT / "scripts" / "hephaestus_build.py"
 
 
 def now_iso() -> str:
@@ -93,6 +102,7 @@ def show(brief: dict) -> None:
     is_video = str(brief.get("brief_id", "")).find("-hero-video") != -1 or brief.get("asset_type") == "hero-video"
     tool = "ChatGPT/Sora (video)" if is_video else "ChatGPT (image)"
     print(f"will use:      {tool} — free path, you generate, nothing is spent")
+    print(f"pro option:    --engine higgsfield — automated build, real credits")
     print("=" * 60)
 
 
@@ -101,6 +111,9 @@ def main() -> int:
     parser.add_argument("brief", type=Path)
     parser.add_argument("--decision", choices=["y", "n"], default=None,
                         help="the answer the human already gave in the Claude session")
+    parser.add_argument("--engine", choices=["free", "higgsfield"], default="free",
+                        help="free (default): you generate in ChatGPT, nothing spent. "
+                             "higgsfield: automated build via the Higgsfield CLI — real credits.")
     args = parser.parse_args()
 
     if not args.brief.exists():
@@ -130,6 +143,31 @@ def main() -> int:
     if answer != "y":
         record_path = write_record(brief, "rejected", decided_via, None, None)
         print(f"REJECTED. Record written: {record_path}")
+        return 0
+
+    if args.engine == "higgsfield":
+        print("APPROVED. Pro engine — Higgsfield CLI, real credits. Building...")
+        result = subprocess.run(
+            [sys.executable, str(BUILD_SCRIPT), str(args.brief)],
+            capture_output=True,
+            text=True,
+        )
+        print(result.stdout)
+        if result.returncode != 0:
+            print(result.stderr, file=sys.stderr)
+            record_path = write_record(brief, "approved-build-failed", decided_via, None, result.stderr.strip()[-2000:])
+            print(f"BUILD FAILED. Record written: {record_path}")
+            return 1
+        produced = None
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if line.startswith("{") and line.endswith("}"):
+                try:
+                    produced = json.loads(line)
+                except json.JSONDecodeError:
+                    pass
+        record_path = write_record(brief, "built", decided_via, produced, None)
+        print(f"BUILT. Record written: {record_path}")
         return 0
 
     print("APPROVED. Free path — nothing is spent, nothing is auto-generated.")

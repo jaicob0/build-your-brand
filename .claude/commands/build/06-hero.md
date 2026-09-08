@@ -69,6 +69,10 @@ That verifies the file is real, installs it to
 `records/assets/hero-still.png` and `hero-poster.jpg`, and writes the
 dated run record in `records/runs/`.
 
+**Have a Higgsfield account?** Say `pro` when Claude offers the engine
+and the gate builds it automatically (`--engine higgsfield`) — real
+credits, no pasting. The course works either way; free is the default.
+
 Judge it like an art director. "Fine" is bad. Are the colours your
 hex? Is the mood the one in `design.md`, or the model's default mood?
 Is there text anywhere?
@@ -121,6 +125,11 @@ the prompt (Sora animates from the still, which keeps the motion
 locked to the frame you approved). Save the download as
 `records/assets/inbox/<brand_id>-hero-video.mp4` and collect it the
 same way. Lands at `records/assets/hero.mp4`.
+
+**Pro option worth knowing:** Higgsfield's `seedance` image-to-video is
+the strongest engine for this exact job — hero motion from a still.
+If you have credits there, say `pro` at the gate and it runs
+automatically.
 
 Stopping at the still is fine. Lesson 7 works either way.
 

@@ -66,11 +66,10 @@ lesson at a time, by typing `/build:NN` commands themselves.
   Claude Code's permission dialog shows that exact command to the
   student, and only they can allow it.
 - Never pass `--decision y` unless the student typed `y` in this
-  session. Never pipe input into the gate. Never call
-  `hephaestus_build.py` or `higgsfield generate` directly — both are
-  denied in `.claude/settings.json`, on purpose.
-- A rejection needs no Higgsfield account and spends nothing; it
-  still writes a dated record.
+  session. Never pipe input into the gate. Never generate an image or
+  video yourself, never call any image/video API or CLI — the student
+  generates in ChatGPT on the free path; the gate's record must wrap
+  every asset.
 
 ## Voice
 

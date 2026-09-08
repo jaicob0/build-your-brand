@@ -56,7 +56,12 @@ thirty to forty-five minutes and can be run any time after.
   finishing tomorrow. Everything else runs without it, and the site
   falls back to a CSS hero.
 
-No API keys. No paid image or video accounts.
+No API keys. No paid accounts required.
+
+**Optional pro engine:** a Higgsfield account with credits unlocks
+automated builds (`--engine higgsfield` at the gate) — and its
+`seedance` image-to-video is the strongest engine for hero motion.
+Free stays the default; the whole course runs without it.
 
 ## What's in the repo
 
@@ -78,10 +83,11 @@ No API keys. No paid image or video accounts.
                           Chrome, rasterised and looked at
   aphrodite-direction/    one-line idea -> typed creative_brief.json
                           (never picks a tool or model; asset_type-aware)
-  hephaestus-production/  validated brief -> the gate -> paste-ready
-                          ChatGPT prompt -> you generate free, collect the
-                          download -> asset + dated run record. Also the
-                          hero still and hero video.
+  hephaestus-production/  validated brief -> the gate -> free path
+                          (paste-ready ChatGPT prompt, you generate and
+                          collect the download) or optional pro engine
+                          (Higgsfield CLI, real credits) -> asset + dated
+                          run record. Also the hero still and hero video.
   brand-website/          foundation + necessary-beliefs.md (one section
                           per belief) + design.md + hero -> a single
                           self-contained index.html with its own assets/
@@ -96,9 +102,12 @@ No API keys. No paid image or video accounts.
 schema/                   brand_foundation.schema.json, creative_brief.schema.json
 scripts/
   validate_brief.py       stdlib-only schema validator (both schemas)
-  approval_gate.py        the human approval gate — the only path to a build
+  approval_gate.py        the human approval gate — the only path to a
+                          build, on either engine
   collect_asset.py        verifies your ChatGPT download, installs the
                           asset, writes the dated run record
+  hephaestus_build.py     pro engine: real Higgsfield CLI build (optional,
+                          real credits)
   dashboard_status.py     writes status.json from what is actually on disk
   serve_dashboard.py      serves dashboard.html, refreshes on load
 dashboard.html            build-progress view, reads status.json only
@@ -147,11 +156,15 @@ A build is two keystrokes, and neither belongs to Claude.
    you've allowed other Python commands.
 
 The gate refuses piped input, so `echo y |` writes no record and
-generates nothing. Claude never generates an image or video itself and
-never calls any image/video API — you generate, in ChatGPT, free. You can
-also run the gate yourself in a second terminal and answer there; it's
-the same prompt and the same record. A rejection generates nothing and
-spends nothing.
+generates nothing. On the default free engine, you generate — in
+ChatGPT, free — and `collect_asset.py` verifies and installs the
+download. With `--engine higgsfield` the gate builds automatically via
+the Higgsfield CLI (real credits), and direct calls to
+`hephaestus_build.py` and `higgsfield generate` stay denied for Claude
+in the settings file, so the gate and its record wrap every build on
+either engine. You can also run the gate yourself in a second terminal
+and answer there; it's the same prompt and the same record. A rejection
+generates nothing and spends nothing.
 
 One caveat, stated plainly: if you start Claude Code in
 `bypassPermissions` mode, the dialog is skipped and the gate is only as

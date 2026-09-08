@@ -29,6 +29,8 @@ Two hard rules that make this better than the naive version:
   `necessary-beliefs.md`, `avatar-sheet.md`, `offerbrief.md`.
 - `design.md` at the repo root (exact palette/type/voice — Lesson 4).
 - For image/video builds: a free ChatGPT account, logged in (Lesson 1).
+  Optional pro engine: Higgsfield CLI authenticated — only when the
+  student chooses it at the gate.
 
 ## What you do
 

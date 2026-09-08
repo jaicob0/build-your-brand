@@ -76,7 +76,8 @@ generate (free), download the result, save it as
 `records/assets/inbox/<brief_id>.png`, then run
 `python3 scripts/collect_asset.py records/briefs/<brief_id>.json`.
 The file lands in `records/assets/`, the dated record in
-`records/runs/`.
+`records/runs/`. (Have a Higgsfield account? Say `pro` at the gate and
+it builds automatically — real credits — instead of the ChatGPT step.)
 
 Then judge it hard. Does it keep every `must_preserve`? Does it break
 any `forbidden`? Zoom in. A clean exit isn't proof the image is right;
@@ -112,6 +113,10 @@ are what make it a record.
 - **ChatGPT daily limit hit.** Free tiers cap generations per day.
   Nothing is lost — the brief and your approval are on record; finish
   tomorrow where you left off.
+- **Pro engine trouble (if you chose Higgsfield).** Auth error:
+  `higgsfield auth login`, re-run. Rate limit: wait a minute. Out of
+  credits: top up at higgsfield.ai, or drop back to the free path —
+  the same brief works on either.
 - **The download won't save as PNG/MP4.** `collect_asset.py` checks
   the file's real type, not its name. Save the original export; don't
   rename another file to match.
