@@ -28,7 +28,7 @@ page come from the same evidence.
 
 | Engine | You get | Spend |
 |---|---|---|
-| **Ads** | five to eight researched angles, a Meta-ready copy bank, static ads, video scripts | image plates cost credits and are gated; copy is free |
+| **Ads** | five to eight researched angles, a Meta-ready copy bank, static ads, video scripts | image plates are gated, free (ChatGPT); copy is free |
 | **Email** | a welcome sequence mapped to your beliefs, subject variants, HTML templates | none; your review only |
 | **Content** | pillars, sourced post ideas, rendered carousels, captions, a fortnight's schedule | none; headless Chrome renders |
 
@@ -76,8 +76,8 @@ For each concept you approve:
 
 Two layers:
 1. **The plate.** A text-free background in your exact `design.md`
-   palette, through the approval gate (credits; check your balance
-   before `y`). The brief carries `asset_type: ad-plate` and the build
+   palette, through the approval gate (free — you generate in
+   ChatGPT when the gate prints the prompt). The brief carries `asset_type: ad-plate` and the build
    prompt forbids text, logos and fabricated characters on every
    surface.
 2. **The overlay.** Your hook, headline and button rendered on top as

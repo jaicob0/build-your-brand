@@ -47,7 +47,7 @@ The bar: read it as the image model would. If any field could produce
 two different images, tighten it now. "A premium scene" is empty.
 "Deep green #1E3A2F background, cream product, soft morning side-light,
 no people" is a slot the model can fill exactly. A vague brief costs a
-minute here and credits at the gate.
+minute here and a wasted generation at the gate.
 
 ```bash
 python3 scripts/validate_brief.py records/briefs/<brief_id>.json
@@ -59,7 +59,7 @@ python3 scripts/validate_brief.py records/briefs/<brief_id>.json
 
 ---
 
-## STEP 2 · Build through the gate
+## STEP 2 · Build through the gate, then ChatGPT
 
 > **RUN (Claude, in this session):** Use `hephaestus-production` on
 > `records/briefs/<brief_id>.json`.
@@ -69,32 +69,36 @@ and asks `Approve build? [y/N]`; you answer here. Then Claude Code's
 permission dialog shows the exact gate command with your answer in it,
 and you allow it. Prefer your own terminal? Run
 `python3 scripts/approval_gate.py records/briefs/<brief_id>.json`
-there and answer the prompt. Same gate, same record. This step spends
-credits: check `higgsfield account status` first. On `y`, the
-Higgsfield CLI builds it, the file lands in `records/assets/`, and a
-dated record lands in `records/runs/`.
+there and answer the prompt. Same gate, same record.
+
+On `y`, the gate prints a paste-ready prompt. Paste it into ChatGPT,
+generate (free), download the result, save it as
+`records/assets/inbox/<brief_id>.png`, then run
+`python3 scripts/collect_asset.py records/briefs/<brief_id>.json`.
+The file lands in `records/assets/`, the dated record in
+`records/runs/`.
 
 Then judge it hard. Does it keep every `must_preserve`? Does it break
 any `forbidden`? Zoom in. A clean exit isn't proof the image is right;
 you are the proof step. A broken rule means a tighter brief and a
-rebuild, and both attempts stay on record.
+regeneration, and both attempts stay on record.
 
 One honest note: this lesson lets the image model render your headline
 so you can see how it does. Lesson 10 does it the production way, a
 text-free plate with type laid over it afterwards, because image
 models garble text often enough that ads can't depend on it.
 
-> **CHECK.** Brief read, balance checked, `y` given, dialog allowed,
-> asset opened and inspected. Say `next`.
+> **CHECK.** Brief read, `y` given, dialog allowed, prompt pasted into
+> ChatGPT, file collected, asset opened and inspected. Say `next`.
 
 ---
 
 ## STEP 3 · Refuse one on purpose
 
 Run STEP 2 again with any brief and answer anything but `y`. No
-Higgsfield account needed; a refusal spends nothing. Open the record in
+account needed; a refusal spends nothing. Open the record in
 `records/runs/`. The refusal is on file, dated, with no asset produced
-and no credit spent.
+and nothing generated.
 
 A record that only holds the wins is a highlight reel. The refusals
 are what make it a record.
@@ -105,17 +109,17 @@ are what make it a record.
 
 ## If something goes wrong
 
-`hephaestus_build.py` turns these into one-line fixes instead of
-stack traces:
-
-- **Auth error.** `higgsfield auth login`, then re-run.
-- **Rate limit.** Wait a minute, re-run.
-- **Out of credits.** Top up at higgsfield.ai, re-run.
-- **Content filter**, usually a false positive on a brand name.
+- **ChatGPT daily limit hit.** Free tiers cap generations per day.
+  Nothing is lost — the brief and your approval are on record; finish
+  tomorrow where you left off.
+- **The download won't save as PNG/MP4.** `collect_asset.py` checks
+  the file's real type, not its name. Save the original export; don't
+  rename another file to match.
+- **Content filter.** Usually a false positive on a brand name.
   Re-run `aphrodite-direction` without the specific name.
 
-A raw Python traceback instead of one of those is a real bug. Dig in
-rather than retrying.
+A raw Python traceback instead of a clean message is a real bug. Dig
+in rather than retrying.
 
 ---
 

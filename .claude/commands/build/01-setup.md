@@ -39,7 +39,7 @@ By the end of Lesson 9, all from an empty folder:
   options
 - A visual brand book, HTML and PDF, with every rule shown rather
   than described
-- A hero still, and a video if you choose to spend on it, both
+- A hero still, and a video if you choose to spend the time on it, both
   through the gate
 - A one-page site with nothing on it you can't back
 - One finished asset and one refusal, both on record
@@ -69,10 +69,14 @@ in a chat you'll never scroll back to.
 
 **What you need:** a Mac, Claude Code logged in on a Claude
 subscription (Pro works; Max is safer for Lesson 2's research), Python
-3, Google Chrome, and about three hours. No design tools, no API keys.
-A Higgsfield account with credits matters only in Lessons 6 and 8 and
-for the ad plates in Lesson 10, and every one of those steps can be
-skipped.
+3, Google Chrome, a free ChatGPT account, and about three hours. No
+design tools, no API keys, no paid image or video accounts.
+
+Image and video generation in Lessons 6, 8 and 10 run on the **free
+path**: the gate prints a paste-ready prompt, you generate in ChatGPT
+(free) — ChatGPT for images, ChatGPT/Sora for video — download the
+result, and drop it in the repo. Free tiers have daily limits; if you
+hit one, the lesson picks up where it left off the next day.
 
 ---
 
@@ -89,18 +93,12 @@ python3 --version
 Both print a version. Chrome renders the brand guide PDF and the
 Lesson 10 assets; if it isn't at that path, install it before Lesson 5.
 
-Higgsfield is optional here. Only Lesson 6, Lesson 8 and the Lesson 10
-plates generate images, and each says so before anything is spent. If
-you already have an account, confirm it now; otherwise come back when
-Lesson 6 asks:
+Log into ChatGPT in your browser now if you aren't already — Lessons
+6, 8 and 10 generate images there, free, and hitting a daily limit just
+means finishing tomorrow.
 
-```bash
-higgsfield auth login
-higgsfield account status
-```
-
-> **CHECK.** Python and Chrome report versions. Higgsfield confirmed or
-> deferred. Say `next`.
+> **CHECK.** Python and Chrome report versions. ChatGPT logged in.
+> Say `next`.
 
 ---
 
@@ -146,8 +144,7 @@ you; a view of the disk. It fills in as you build.
 
 ## On record
 
-- Claude Code running; Python and Chrome confirmed; Higgsfield
-  confirmed or deferred to Lesson 6
+- Claude Code running; Python and Chrome confirmed; ChatGPT logged in
 - Nine skills visible
 - A dashboard that reads the disk
 

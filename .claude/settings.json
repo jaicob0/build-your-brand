@@ -5,8 +5,6 @@
       "Bash(*approval_gate.py)"
     ],
     "deny": [
-      "Bash(*hephaestus_build.py *)",
-      "Bash(*hephaestus_build.py)",
       "Bash(higgsfield generate *)",
       "Bash(*/higgsfield generate *)"
     ]

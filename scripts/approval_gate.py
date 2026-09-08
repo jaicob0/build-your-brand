@@ -13,24 +13,24 @@ How the gate holds:
     session. Claude Code's own permission dialog shows the exact command,
     --decision included, before it runs; only a human can allow it
     (.claude/settings.json lists this script under "ask").
-  - Piped stdin is refused. `echo y | approval_gate.py` writes no record and
-    builds nothing.
-  - On y it runs scripts/hephaestus_build.py, which is the only path to the
-    Higgsfield CLI; direct calls to both are denied in .claude/settings.json.
+  - Piped stdin is refused. `echo y | approval_gate.py` writes no record.
+  - On y it prints a paste-ready prompt for ChatGPT and records the
+    approval; you generate the asset yourself (free, no credits spent),
+    save it to records/assets/inbox/<brief_id>.<ext>, then run
+    scripts/collect_asset.py to verify, install and record it. Nothing
+    is ever generated automatically and nothing is ever spent.
 
 Record file: records/runs/<brief_id>-<timestamp>.json
 """
 from __future__ import annotations
 import argparse
 import json
-import subprocess
 import sys
 import datetime as dt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNS_DIR = ROOT / "records" / "runs"
-BUILD_SCRIPT = ROOT / "scripts" / "hephaestus_build.py"
 
 
 def now_iso() -> str:
@@ -41,17 +41,23 @@ def now_slug() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
-def build_settings() -> dict:
-    """Read the production constants so the gate can say what a y will use."""
-    out = {}
-    try:
-        for line in BUILD_SCRIPT.read_text().splitlines():
-            for key in ("IMAGE_MODEL", "VIDEO_MODEL", "QUALITY", "RESOLUTION", "VIDEO_RESOLUTION", "VIDEO_DURATION"):
-                if line.startswith(key + " ="):
-                    out[key] = line.split("=", 1)[1].split("#", 1)[0].strip().strip('"')
-    except OSError:
-        pass
-    return out
+def prompt_from_brief(brief: dict) -> str:
+    """The paste-ready prompt the free path prints: the brief's creative
+    intent, as written, for the student to paste into ChatGPT."""
+    parts = [
+        brief.get("big_idea", ""),
+        brief.get("visual_description", ""),
+        brief.get("style_notes", ""),
+    ]
+    if brief.get("must_preserve"):
+        parts.append("Must preserve: " + "; ".join(brief["must_preserve"]) + ".")
+    if brief.get("forbidden"):
+        parts.append("Do not include: " + "; ".join(brief["forbidden"]) + ".")
+    prompt = " ".join(p.strip() for p in parts if p and p.strip())
+    ar = brief.get("aspect_ratio")
+    if ar:
+        prompt += f" Aspect ratio {ar}."
+    return prompt
 
 
 def write_record(brief: dict, decision: str, decided_via: str, produced: dict | None, error: str | None) -> Path:
@@ -84,14 +90,9 @@ def show(brief: dict) -> None:
     print(f"aspect_ratio:  {brief.get('aspect_ratio')}")
     print(f"must_preserve: {brief.get('must_preserve')}")
     print(f"forbidden:     {brief.get('forbidden')}")
-    s = build_settings()
     is_video = str(brief.get("brief_id", "")).find("-hero-video") != -1 or brief.get("asset_type") == "hero-video"
-    if s:
-        if is_video:
-            print(f"will run:      {s.get('VIDEO_MODEL')} · {s.get('VIDEO_RESOLUTION')} · {s.get('VIDEO_DURATION')}s image-to-video")
-        else:
-            print(f"will run:      {s.get('IMAGE_MODEL')} · quality {s.get('QUALITY')} · {s.get('RESOLUTION')}")
-    print("credits:       Higgsfield charges per generation. Check `higgsfield account status` before and after.")
+    tool = "ChatGPT/Sora (video)" if is_video else "ChatGPT (image)"
+    print(f"will use:      {tool} — free path, you generate, nothing is spent")
     print("=" * 60)
 
 
@@ -131,30 +132,28 @@ def main() -> int:
         print(f"REJECTED. Record written: {record_path}")
         return 0
 
-    print("APPROVED. Building via Hephaestus...")
-    result = subprocess.run(
-        [sys.executable, str(BUILD_SCRIPT), str(args.brief)],
-        capture_output=True,
-        text=True,
-    )
-    print(result.stdout)
-    if result.returncode != 0:
-        print(result.stderr, file=sys.stderr)
-        record_path = write_record(brief, "approved-build-failed", decided_via, None, result.stderr.strip()[-2000:])
-        print(f"BUILD FAILED. Record written: {record_path}")
-        return 1
-
-    produced = None
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if line.startswith("{") and line.endswith("}"):
-            try:
-                produced = json.loads(line)
-            except json.JSONDecodeError:
-                pass
-
-    record_path = write_record(brief, "built", decided_via, produced, None)
-    print(f"BUILT. Record written: {record_path}")
+    print("APPROVED. Free path — nothing is spent, nothing is auto-generated.")
+    print()
+    print("-" * 60)
+    print("PASTE THIS PROMPT INTO CHATGPT")
+    print("(ChatGPT for images; ChatGPT/Sora for video):")
+    print("-" * 60)
+    print()
+    print(prompt_from_brief(brief))
+    print()
+    print("-" * 60)
+    print("THEN")
+    print("-" * 60)
+    print(f"1. Download the result from ChatGPT.")
+    print(f"2. Save it as records/assets/inbox/{brief.get('brief_id', 'unknown')}.png")
+    print(f"   (or .mp4 for video — keep the extension the download gave you).")
+    print(f"3. Run:  python3 scripts/collect_asset.py {args.brief}")
+    print(f"   That verifies the file, installs it to records/assets/, and")
+    print(f"   writes the dated build record.")
+    print("-" * 60)
+    record_path = write_record(brief, "approved-free-path", decided_via, None, None)
+    print(f"APPROVAL recorded: {record_path}")
+    print("When the file is in the inbox, collect it with scripts/collect_asset.py.")
     return 0
 
 

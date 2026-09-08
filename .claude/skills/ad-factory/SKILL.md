@@ -19,15 +19,16 @@ Two hard rules that make this better than the naive version:
    type, exact brand fonts and colours, every time.
 2. **No ungated spend.** Every plate/video build goes through the
    approval gate like any other asset. Copy and angle work are
-   generated and student-reviewed (no credits, no gate needed);
-   image/video generation is gated (real credits).
+   generated and student-reviewed (no generation, no gate needed);
+   image/video generation is gated — and free: the student generates
+   in ChatGPT on the free path.
 
 ## Prerequisites
 
 - A validated foundation: `records/brands/<brand_id>/` with
   `necessary-beliefs.md`, `avatar-sheet.md`, `offerbrief.md`.
 - `design.md` at the repo root (exact palette/type/voice — Lesson 4).
-- For image/video builds: Higgsfield CLI authenticated (Lesson 1).
+- For image/video builds: a free ChatGPT account, logged in (Lesson 1).
 
 ## What you do
 
@@ -95,9 +96,10 @@ For each concept the student approves for production:
    built to `design.md` palette and mood, with clear negative space
    where the copy will sit. `forbidden` must include on-image text,
    logos, watermarks — per-surface where the plate has multiple
-   surfaces. Validate, run through the Hephaestus gate, download to
+   surfaces. Validate, run through the Hephaestus gate, paste the
+   printed prompt into ChatGPT, then collect the download to
    `records/assets/`.
-2. **The overlay (no credits):** build a brand-locked HTML file per
+2. **The overlay (no generation):** build a brand-locked HTML file per
    ad — the plate as background image, hook/headline/CTA in the
    brand's exact fonts and colours from `design.md` — and render to
    PNG with headless Chrome at the plate's resolution. Save to

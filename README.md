@@ -50,12 +50,13 @@ thirty to forty-five minutes and can be run any time after.
 - **Google Chrome** at its standard path — it renders the brand guide
   PDF and the Lesson 10 emails and carousels.
 - **poppler** for the PDF check in Lesson 5: `brew install poppler`.
-- **Optional: a Higgsfield account with credits.** Only Lesson 6,
-  Lesson 8 and the ad plates in Lesson 10 generate images, and each
-  says so before it spends. Everything else runs without it, and the
-  site falls back to a CSS hero.
+- **A free ChatGPT account**, logged into your browser. Lesson 6,
+  Lesson 8 and the ad plates in Lesson 10 generate images there — free.
+  Free tiers have daily generation limits; hitting one just means
+  finishing tomorrow. Everything else runs without it, and the site
+  falls back to a CSS hero.
 
-No API keys.
+No API keys. No paid image or video accounts.
 
 ## What's in the repo
 
@@ -77,8 +78,9 @@ No API keys.
                           Chrome, rasterised and looked at
   aphrodite-direction/    one-line idea -> typed creative_brief.json
                           (never picks a tool or model; asset_type-aware)
-  hephaestus-production/  validated brief -> the gate -> real Higgsfield
-                          CLI build -> asset + dated run record. Also the
+  hephaestus-production/  validated brief -> the gate -> paste-ready
+                          ChatGPT prompt -> you generate free, collect the
+                          download -> asset + dated run record. Also the
                           hero still and hero video.
   brand-website/          foundation + necessary-beliefs.md (one section
                           per belief) + design.md + hero -> a single
@@ -95,7 +97,8 @@ schema/                   brand_foundation.schema.json, creative_brief.schema.js
 scripts/
   validate_brief.py       stdlib-only schema validator (both schemas)
   approval_gate.py        the human approval gate — the only path to a build
-  hephaestus_build.py     calls the real Higgsfield CLI, downloads the asset
+  collect_asset.py        verifies your ChatGPT download, installs the
+                          asset, writes the dated run record
   dashboard_status.py     writes status.json from what is actually on disk
   serve_dashboard.py      serves dashboard.html, refreshes on load
 dashboard.html            build-progress view, reads status.json only
@@ -118,7 +121,9 @@ records/                  everything the skills write (gitignored; empty
 - **Aphrodite** turns a one-line idea into a typed creative brief. She
   decides what should exist, never how.
 - **Hephaestus** reads the brief exactly as written, runs the gate, and
-  only on a human `y` calls the Higgsfield CLI. Every decision, built
+  only on a human `y` prints a paste-ready prompt for ChatGPT. You
+  generate (free), download, drop the file in the inbox, and
+  `collect_asset.py` verifies and installs it. Every decision, built
   or rejected, is a dated file in `records/runs/`.
 - **Brand Website** reads the foundation, the beliefs, `design.md` and
   the hero if one exists. Copy first, then styled. One file plus its
@@ -141,12 +146,12 @@ A build is two keystrokes, and neither belongs to Claude.
    lists the gate script under `ask`, so the dialog appears even if
    you've allowed other Python commands.
 
-The gate refuses piped input, so `echo y |` writes no record and builds
-nothing. Direct calls to `hephaestus_build.py` and `higgsfield generate`
-are denied for Claude in the same settings file, so the gate and its
-record wrap every build. You can also run the gate yourself in a
-second terminal and answer there; it's the same prompt and the same
-record. A rejection needs no Higgsfield account and spends nothing.
+The gate refuses piped input, so `echo y |` writes no record and
+generates nothing. Claude never generates an image or video itself and
+never calls any image/video API — you generate, in ChatGPT, free. You can
+also run the gate yourself in a second terminal and answer there; it's
+the same prompt and the same record. A rejection generates nothing and
+spends nothing.
 
 One caveat, stated plainly: if you start Claude Code in
 `bypassPermissions` mode, the dialog is skipped and the gate is only as

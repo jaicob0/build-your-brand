@@ -1,5 +1,5 @@
 ---
-description: "Build Your Brand, Lesson 6: The face. A hero still through the gate, then motion if you choose to spend on it."
+description: "Build Your Brand, Lesson 6: The face. A hero still through the gate, then motion if you choose to spend the time on it."
 ---
 
 # /build:06-hero
@@ -22,14 +22,11 @@ About twenty minutes. You leave with a hero still that went through the gate and
 ## The still decides the video
 
 Motion adds nothing a bad frame lacks. So the order is fixed: generate
-the still, approve it, inspect it, and only then animate it. This
-lesson spends real credits, which is why the gate exists. Nothing is
-built until you've read the brief and typed `y`.
-
-**Needs a Higgsfield account with credits** (`higgsfield auth login`,
-then `higgsfield account status`). Don't have one? Go to
-`/build:07-website`. The site falls back to a CSS hero, and Lesson 8's
-refusal record works with no account at all.
+the still, approve it, inspect it, and only then animate it. Nothing
+is generated until you've read the brief and typed `y` — and even then,
+**you** generate it, in ChatGPT, free. The gate prints the prompt; you
+paste it, download the result, drop it in the repo. No credits, no paid
+accounts.
 
 ---
 
@@ -49,7 +46,7 @@ housing), forbid text on each one by name rather than once in general.
 
 ---
 
-## STEP 2 · Through the gate
+## STEP 2 · Through the gate, then ChatGPT
 
 > **RUN (Claude, in this session):** Use `hephaestus-production` on
 > `records/briefs/<brief_id>.json`.
@@ -58,20 +55,29 @@ The gate is two keystrokes and neither is Claude's. Claude shows you
 the brief and asks `Approve build? [y/N]`; you answer here. Then Claude
 Code's own permission dialog shows the exact gate command with your
 answer inside it, and you allow it. Claude can't click that dialog.
-This step spends credits: check `higgsfield account status` before you
-answer and again after. The result lands at
-`records/assets/hero-still.png` and `hero-poster.jpg`, with a dated
-record in `records/runs/`.
+
+On `y`, the gate prints a **paste-ready prompt** — the brief's creative
+intent, exactly as written. Paste it into ChatGPT, generate (free),
+download the result, and save it as
+`records/assets/inbox/<brief_id>.png`. Then collect it:
+
+```bash
+python3 scripts/collect_asset.py records/briefs/<brief_id>.json
+```
+
+That verifies the file is real, installs it to
+`records/assets/hero-still.png` and `hero-poster.jpg`, and writes the
+dated run record in `records/runs/`.
 
 Judge it like an art director. "Fine" is bad. Are the colours your
 hex? Is the mood the one in `design.md`, or the model's default mood?
 Is there text anywhere?
 
-If it's mediocre, rebuild with a sharper brief. It's cheaper than
-animating a weak frame.
+If it's mediocre, generate again with a sharper brief. It's free —
+your only cost is a minute and a daily limit.
 
-> **CHECK.** Brief read, balance checked, `y` given only if you want
-> this build, dialog allowed. Say `next`.
+> **CHECK.** Brief read, `y` given, dialog allowed, prompt pasted into
+> ChatGPT, file collected, still inspected. Say `next`.
 
 ---
 
@@ -109,8 +115,12 @@ seconds, looping.
 > `<brand_id>` hero video, `brief_id` ending in `-hero-video`, then
 > `hephaestus-production` on the resulting brief.
 
-Same gate. Video costs more than a still, so check your balance first.
-Lands at `records/assets/hero.mp4`.
+Same gate, then the same free path — but in ChatGPT/Sora, video this
+time. For image-to-video, upload `records/assets/hero-still.png` with
+the prompt (Sora animates from the still, which keeps the motion
+locked to the frame you approved). Save the download as
+`records/assets/inbox/<brand_id>-hero-video.mp4` and collect it the
+same way. Lands at `records/assets/hero.mp4`.
 
 Stopping at the still is fine. Lesson 7 works either way.
 
@@ -121,6 +131,6 @@ Stopping at the still is fine. Lesson 7 works either way.
 - A hero still in `records/assets/`, approved by you at the gate,
   inspected by you up close
 - The decision, dated, in `records/runs/`
-- The video, only if you chose to spend on it
+- The video, only if you chose to make it
 
 Next: `/build:07-website`. The site: words first, `design.md` second.
