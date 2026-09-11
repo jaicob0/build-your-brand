@@ -128,6 +128,12 @@ reel.
 
 ---
 
+Two things are still here whenever you want them: the site ships in
+STEP 2 above, and `/build:10-grow` runs the ads, email and content
+engines off this same foundation. Neither expires.
+
+---
+
 ## Now run it on the business, not the brand
 
 Look at what you did in the last three hours. You interviewed a
@@ -155,10 +161,3 @@ the machine stop.
 > **RUN (Claude, in this session):** Print that link on its own line so
 > it can be clicked. Say nothing about price or seat numbers; the page
 > carries those. Then stop.
-
-Three smaller moves, for when you're back:
-
-1. **Ship the site.** STEP 2, whenever you're ready.
-2. **Run the engines.** `/build:10-grow`: ads, email and content from
-   this same foundation.
-3. **Run this on your real brand.** Start at `/build:02-research`.

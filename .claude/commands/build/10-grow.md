@@ -189,4 +189,16 @@ This is the moment you understand it best. Use it.
 
 > **RUN (Claude, in this session):** Print that link on its own line so
 > it can be clicked. Say nothing about price or seat numbers; the page
-> carries those. Then stop. Course complete.
+> carries those. Then stop.
+
+---
+
+## Two smaller moves, for when you're back
+
+1. **Ship the site**, if you haven't — `/build:09-done`, STEP 2.
+2. **Run this on your real brand.** Start again at
+   `/build:02-research`. The engines above run off whatever
+   foundation exists, so a second brand costs you the research and
+   nothing else.
+
+Course complete.
