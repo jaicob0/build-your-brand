@@ -1,10 +1,10 @@
 # Build Your Brand
 
-An interactive brand-building course that runs inside Claude Code.
-Cold clone to a researched brand, a design system, a visual brand
-guide, a hero, a one-page site and one finished asset — with a human
-approval gate on anything that spends money, and a dated record of
-every decision, including the ones you said no to.
+**Free. 10 lessons, ~2.5 hours.** Cold clone to a researched brand, a
+design system, a visual brand guide, a hero, a one-page site and one
+finished asset — entirely inside Claude Code, with a human approval
+gate on anything that spends money, and a dated record of every
+decision, including the ones you said no to.
 
 It is the free, complete first function of **The Creative Architect**
 course: https://thecreativearchitect.uk
