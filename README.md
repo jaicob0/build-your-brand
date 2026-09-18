@@ -56,7 +56,8 @@ thirty to forty-five minutes and can be run any time after.
   finishing tomorrow. Everything else runs without it, and the site
   falls back to a CSS hero.
 
-No API keys. No paid accounts required.
+No API keys, and nothing to buy from me. The Claude subscription above
+is the one paid thing you need, and you pay it to Anthropic, not here.
 
 **Optional pro engine:** a Higgsfield account with credits unlocks
 automated builds (`--engine higgsfield` at the gate) — and its
