@@ -12,7 +12,7 @@ course: https://thecreativearchitect.uk
 ## Quickstart
 
 ```bash
-git clone https://github.com/jacobgpt/build-your-brand.git
+git clone https://github.com/jaicob0/build-your-brand.git
 cd build-your-brand
 claude
 ```
