@@ -1,5 +1,5 @@
 ---
-description: "Build Your Brand, Lesson 10: Mission Control. One owned view, built from design.md, reading real files, with every number that isn't live labelled as such."
+description: "Build Your Brand, Lesson 10: Mission Control. A multi-page dashboard in your own tokens, every tile labelled live or placeholder, the agent feed, refresh and cache, verified by looking."
 ---
 
 # /build:10-dashboard
@@ -15,7 +15,7 @@ description: "Build Your Brand, Lesson 10: Mission Control. One owned view, buil
 ```
 
 **LESSON 10 OF 13 · MISSION CONTROL**
-About twenty-five minutes. You leave with a dashboard in your own brand that reads your disk, and a screenshot you have actually looked at.
+About thirty-five minutes. You leave with an overview and a page per department, in your own brand, and a screenshot you have actually looked at.
 
 ---
 
@@ -25,80 +25,111 @@ You already have one dashboard: `dashboard.html`, the course progress
 board that reads `records/` and tells you which lessons are genuinely
 done. It is deliberately plain, and it is not yours.
 
-This lesson builds the one that is. Same principle, your brand: it
-reads files on your disk and reports what it finds. Your agents, what
-they did, what they stopped on, and the handful of numbers you would
-actually change your week over.
+This lesson builds the one that is. Your departments, your numbers,
+your agents, in your tokens.
 
-The rule that makes it worth keeping open: **every number has a source
-on disk, or it is labelled a placeholder, in the tile, where you can
-see it.** A dashboard that quietly carries a made-up number is worse
-than no dashboard, because you will quote it.
+Two rules carry the whole build:
 
----
+**It renders in your brand.** Every colour, font, radius and treatment
+comes from `design.md`. Two people running this lesson on two brands
+end up with two dashboards that look nothing alike. If yours looks like
+a template, it is wrong.
 
-## STEP 1 · Decide what earns a tile
-
-List what you check, or wish you could check, every day. Then cut it
-with two questions:
-
-- Would you do something differently this week if this moved?
-- Is there a file, or a source you can actually reach, that answers it?
-
-No to the first is noise. No to the second is a placeholder, clearly
-marked, wired later. The agent feed is already live, because
-`records/agents/*/runs/` is on your disk from Lesson 9.
-
-A board that shows everything shows nothing. Six tiles you read is
-better than twenty you scroll past.
-
-> **CHECK.** Your tile list, each with the file or source behind it.
-> Say `next`.
+**Every number says where it came from.** `LIVE`, `PLACEHOLDER` or
+missing, labelled in the tile, not in a footnote. A dashboard that
+quietly carries a made-up number is worse than no dashboard, because
+you will quote it in a meeting.
 
 ---
 
-## STEP 2 · Build it from your own tokens
+## STEP 1 · Departments, then tiles
 
-> **RUN (Claude, in this session):** Use `mission-control` for the tiles
-> from STEP 1.
+List what you check, or wish you could check, daily. Group it into the
+departments your business actually runs. Those groups become your
+pages: maybe overview, performance, customers, agents. Maybe overview,
+pipeline, delivery, agents. Yours, not a template's.
 
-It writes `records/mission-control/scope.md` first: every tile, its
-question, its source, live or placeholder. Read that before the build.
+Then cut each tile with two questions:
 
-Then it writes `scripts/mission_status.py`, which walks `records/` and
-emits the numbers, and `records/mission-control/index.html`, styled
-from `design.md`. Not a template, not a palette it liked better. Your
-hexes, your fonts, your spacing, the same ones the site and the brand
-guide use. If it cannot find a value in `design.md`, it asks you rather
-than choosing.
+- Would you do something differently this week if it moved?
+- Can anything answer it: a file, or a source you can reach?
 
-Serve it:
+No to the first is noise. No to the second is a placeholder, labelled,
+wired later. Four to eight tiles a page. A page that shows everything
+shows nothing.
+
+> **CHECK.** Your page map: each department, its tiles, and the source
+> behind each one. Say `next`.
+
+---
+
+## STEP 2 · The tile map, before any HTML
+
+> **RUN (Claude, in this session):** Use `mission-control`, STEP 1:
+> write `records/mission-control/sources.json` and `scope.md` from my
+> page map.
+
+Then read the numbers before anything renders them:
+
+```bash
+python3 scripts/mission_status.py
+```
+
+It prints how many tiles are live, how many are placeholders and how
+many are **missing**, and names every missing one. Missing means you
+pointed at a file that is not there. Fix the map until the only
+non-live tiles are the ones you meant.
+
+The agent feed is already live: it reads `records/agents/*/runs/` from
+Lesson 9 and the unattended runs from Lesson 11 once they exist.
+
+> **CHECK.** `mission_status.py` runs, and you recognise every
+> placeholder in the list. Say `next`.
+
+---
+
+## STEP 3 · Build it from your own tokens
+
+> **RUN (Claude, in this session):** Continue `mission-control`, STEP 2
+> to STEP 5: lock the design system from `design.md`, build the
+> overview, mirror it into the department pages, wire refresh and the
+> cache.
+
+The overview carries the briefing line, the tiles with their state
+chips, sparklines where a tile is time-series, and the agent feed with
+escalations shown prominently. Every department page mirrors the same
+`:root` block and the same nav, changing only the active item and the
+content, so the whole thing reads as one product rather than four.
 
 ```bash
 python3 scripts/serve_dashboard.py 8788
 ```
 
-Then open `http://localhost:8788/records/mission-control/index.html`.
+Then `http://localhost:8788/records/mission-control/index.html`.
 
-> **CHECK.** It opens, it shows your tiles, and the agent feed lists the
-> runs that are really in `records/agents/`. Say `next`.
+If a tile pulls from a real endpoint, its URL comes from an env var
+named in `sources.json`, and the value lives in your `.env`, which is
+gitignored. No key goes in the HTML.
+
+> **CHECK.** Overview and every department page open, nav works, the
+> feed lists runs that are really in `records/agents/`. Say `next`.
 
 ---
 
-## STEP 3 · Look at it, token by token
+## STEP 4 · Look at it, token by token
 
 Exit codes do not tell you a page is right. Looking does.
 
-Claude renders `records/mission-control/preview.png` and you open it.
-Check three things, in this order:
+Claude renders `records/mission-control/preview.png`. Open it and check
+three things in this order:
 
-- **Honesty.** Every placeholder says so, in the tile. Any number you
-  cannot trace to a file gets removed or labelled, now.
+- **Honesty.** Every non-live tile is labelled in the tile. Any number
+  you cannot trace gets removed or labelled, now.
 - **Brand.** Hold it next to `brand-guide.pdf`. Same hexes, same type,
   same weight of thing. A dashboard that looks like someone else's SaaS
-  is a brand leak you will see every morning.
-- **Phone width.** You will check this from your phone first. If it does
-  not read at 390 wide, it does not count as built.
+  is a brand leak you see every morning.
+- **Phone width.** Render again at 390 wide. You check this from your
+  phone first.
 
 Fix and render again. Twice is normal.
 
@@ -109,19 +140,20 @@ Fix and render again. Twice is normal.
 
 ## If something goes wrong
 
-- **Empty tiles everywhere.** `mission_status.py` is looking in the
-  wrong folders. Run it directly and read what it prints before
-  touching the HTML.
+- **Tiles say `missing`.** That is the script doing its job. The note
+  names the path it could not find. Fix `sources.json`, not the HTML.
 - **A number appears with no source.** That is the defect this lesson
-  exists to catch. Delete it or label it, do not keep it because it
+  exists to catch. Delete it or label it; never keep it because it
   looks good.
 - **Colours drift from the brand guide.** The build approximated
-  `design.md` instead of reading it. Point it back at the file and have
-  it pull the exact values.
+  `design.md` instead of reading it. Point it back at the file and ask
+  for the exact values.
+- **Pages look like four different products.** One line fixes it: match
+  the exact `:root` block and nav markup from `index.html`.
 - **The screenshot command fails.** Chrome is not at the standard path,
-  the same check as Lesson 1. Serve the page and screenshot it by hand
+  the same check as Lesson 1. Serve the page and screenshot by hand
   rather than skipping the look.
-- **The agent feed is empty but runs exist.** It is reading
+- **The feed is empty but runs exist.** It reads
   `records/agents/*/runs/*.json`. Open one and check the shape matches
   what Lesson 9 wrote.
 
@@ -129,9 +161,10 @@ Fix and render again. Twice is normal.
 
 ## On record
 
-- `records/mission-control/scope.md`, every tile with its source named
-- `scripts/mission_status.py`, reading the disk, guessing nothing
-- `records/mission-control/index.html`, in your tokens
+- `records/mission-control/sources.json` and `scope.md`, every tile
+  with its source named
+- `records/mission-control/status.json`, from the script, labelled
+- `index.html` plus a page per department, same tokens, same nav
 - `records/mission-control/preview.png`, the render you looked at
 
 Next: `/build:11-hermes`. The agents and this view, tied into one layer

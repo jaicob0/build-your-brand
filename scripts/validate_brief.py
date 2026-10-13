@@ -2,9 +2,10 @@
 """Validate a JSON file against a schema in schema/.
 
 stdlib only (jsonschema is not assumed to be installed on a stranger's machine).
-Implements just the subset of JSON Schema draft-07 the two brief schemas
-actually use: required, type, enum, pattern, minLength, minItems,
-additionalProperties, one level of nested object.
+Implements just the subset of JSON Schema draft-07 the schemas in this
+repo actually use: required, type, enum, pattern, minLength, minItems,
+additionalProperties, one level of nested object (with enum and
+minLength on its string fields).
 
 Usage:
   python3 scripts/validate_brief.py <file.json> [--schema creative_brief|brand_foundation|agent_spec]
@@ -74,6 +75,11 @@ def validate(brief: dict, schema: dict) -> list[str]:
                     errors.append(f"{field}.{sub_field}: expected string, got {type(sub_val).__name__}")
                 elif sub_t == "boolean" and not isinstance(sub_val, bool):
                     errors.append(f"{field}.{sub_field}: expected boolean, got {type(sub_val).__name__}")
+                elif sub_t == "string":
+                    if "enum" in sub_spec and sub_val not in sub_spec["enum"]:
+                        errors.append(f"{field}.{sub_field}: '{sub_val}' not in enum {sub_spec['enum']}")
+                    if "minLength" in sub_spec and len(sub_val) < sub_spec["minLength"]:
+                        errors.append(f"{field}.{sub_field}: shorter than minLength {sub_spec['minLength']}")
             # Ad-copy specific rule: has_copy true requires real headline + placement text.
             if field == "ad_copy" and val.get("has_copy") is True:
                 if not val.get("headline", "").strip():

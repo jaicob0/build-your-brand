@@ -31,9 +31,11 @@ records/assets/               hero still (and video, if you built it),
 records/briefs/               every brief written
 records/runs/                 every decision, approved or refused, dated
 records/website/<brand_id>/   the site, with its own assets/
-records/agents/               every agent: spec, AGENT.md, its runs
-records/mission-control/      your own dashboard, and the render of it
-records/ops/                  what ran unattended, and what it refused
+records/agents/               _voice.md, and per agent: spec, AGENT.md,
+                              test-log.md, its runs
+records/mission-control/      the tile map, your dashboard, the render
+records/ops/                  allowlist, audit log, schedule, runbook,
+                              what ran unattended and what it refused
 ```
 
 Files on your machine, in a structure someone else could audit. Not a
@@ -127,9 +129,12 @@ reel.
 - A design system every build obeys
 - A hero and a site, both traceable to one source of truth
 - A gate that means nothing is made without you
-- Agents that own a job, with the exceptions coming back to you
-- One view that reads your disk, in your own tokens
-- A layer that ran without you, and a stop command you have typed
+- Agents that own a job, tested on real work, with the exceptions
+  coming back to a channel you proved
+- One view that reads your disk, in your own tokens, every number
+  carrying where it came from
+- A layer that ran without you, five refusals on record, and a stop
+  command you have typed
 - A record of every decision, including the refusals
 
 ---

@@ -3,8 +3,10 @@
     "ask": [
       "Bash(*approval_gate.py *)",
       "Bash(*approval_gate.py)",
-      "Bash(*hermes_schedule.py * --install*)",
-      "Bash(*hermes_run.py * --go*)"
+      "Bash(*hermes_schedule.py install*)",
+      "Bash(*hermes_run.py * --go*)",
+      "Bash(docker compose up*)",
+      "Bash(docker run*)"
     ],
     "deny": [
       "Bash(*hephaestus_build.py *)",

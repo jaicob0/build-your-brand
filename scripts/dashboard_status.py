@@ -30,7 +30,8 @@ def main() -> int:
     assets_dir = ROOT / "records" / "assets"
     agents_dir = ROOT / "records" / "agents"
     mc_dir = ROOT / "records" / "mission-control"
-    ops_runs_dir = ROOT / "records" / "ops" / "runs"
+    ops_dir = ROOT / "records" / "ops"
+    ops_runs_dir = ops_dir / "runs"
     design_md = ROOT / "design.md"
     guide_html = ROOT / "brand-guide.html"
     guide_pdf = ROOT / "brand-guide.pdf"
@@ -69,26 +70,35 @@ def main() -> int:
                 for p in runs_dir.glob("*.json")
             ) if runs_dir.exists() else False
         ),
-        # Lesson 9: an agent counts as built only with a VALID-shaped spec
-        # AND a run on record — a spec on its own is a document.
+        # Lesson 9: an agent counts as built with the shared voice file, a
+        # spec, a run on record AND the honest test log — a spec on its
+        # own is a document.
         "agents": (
-            has_files(agents_dir, "*/spec.json")
+            (agents_dir / "_voice.md").exists()
+            and has_files(agents_dir, "*/spec.json")
             and has_files(agents_dir, "*/runs/*.json")
+            and has_files(agents_dir, "*/test-log.md")
         ),
-        # Lesson 10: the student's own dashboard, plus the render they
-        # were asked to look at.
+        # Lesson 10: the tile map, the student's own dashboard and the
+        # render they were asked to look at.
         "dashboard": (
-            (mc_dir / "index.html").exists()
+            (mc_dir / "sources.json").exists()
+            and (mc_dir / "index.html").exists()
             and (mc_dir / "preview.png").exists()
         ),
-        # Lesson 11: the layer counts as live only with refusals on
-        # record and a runbook holding the stop command.
+        # Lesson 11: the layer counts as live with the central allowlist,
+        # at least two kinds of refusal on record, the audit log, and a
+        # runbook holding the stop command.
         "hermes": (
-            any(
-                json.loads(p.read_text()).get("decision", "").startswith("refused")
+            (ops_dir / "allowlist.json").exists()
+            and (ops_dir / "audit.log").exists()
+            and (ops_dir / "RUNBOOK.md").exists()
+            and len({
+                json.loads(p.read_text()).get("decision", "")
                 for p in ops_runs_dir.glob("*.json")
-            ) if ops_runs_dir.exists() else False
-        ) and (ROOT / "records" / "ops" / "RUNBOOK.md").exists(),
+                if json.loads(p.read_text()).get("decision", "").startswith("refused")
+            }) >= 2 if ops_runs_dir.exists() else False
+        ),
         # Lesson 13: any of the three engine outputs on disk.
         "grow": (
             ROOT.joinpath("records/ads").exists()

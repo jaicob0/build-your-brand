@@ -43,10 +43,12 @@ By the end of Lesson 12, all from an empty folder:
   through the gate
 - A one-page site with nothing on it you can't back
 - One finished asset and one refusal, both on record
-- Agents that own a named job, with an allowlist and named escalations
-- Mission Control: one view in your own tokens, reading your disk
-- An operations layer that ran a job without you, and refused three
-  things on record
+- Agents that own a named job, each tested on five real tasks with an
+  honest log of what they got wrong
+- Mission Control: an overview and a page per department, in your own
+  tokens, every number labelled with where it came from
+- An operations layer running on a host of your choosing, with five
+  refusals and an append-only audit log on record
 
 Lesson 13 adds the engines: ads, email and content that read the same
 foundation.
@@ -65,9 +67,9 @@ business. That comes after. First, the brand.
 | 6 | The face: hero through the gate | 20 min |
 | 7 | The storefront: the site | 20 min |
 | 8 | The gate: brief, build, refuse | 15 min |
-| 9 | The cast: agents that own a job | 25 min |
-| 10 | Mission Control: your own view | 25 min |
-| 11 | The layer: Hermes, scheduled and refusable | 30 min |
+| 9 | The cast: agents, five real tests each | 40 min |
+| 10 | Mission Control: overview + department pages | 35 min |
+| 11 | The layer: Hermes, hosted and refusable | 40 min |
 | 12 | The record: review and ship | 10 min |
 | 13 | The engines: ads, email, content | 30 to 45 min |
 
@@ -76,7 +78,7 @@ in a chat you'll never scroll back to.
 
 **What you need:** a Mac, Claude Code logged in on a Claude
 subscription (Pro works; Max is safer for Lesson 2's research), Python
-3, Google Chrome, a free ChatGPT account, and about four hours. No
+3, Google Chrome, a free ChatGPT account, and about five hours. No
 design tools, no API keys, no paid image or video accounts.
 
 Image and video generation in Lessons 6, 8 and 13 runs on the **free

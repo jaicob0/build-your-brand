@@ -1,6 +1,6 @@
 # Build Your Brand
 
-**Free. 13 lessons, ~4 hours.** Cold clone to a researched brand, a
+**Free. 13 lessons, ~5 hours.** Cold clone to a researched brand, a
 design system, a visual brand guide, a hero, a one-page site, one
 finished asset, agents that own a job and an operations layer that runs
 without you — entirely inside Claude Code, with a human approval gate
@@ -34,14 +34,14 @@ you need to read, choose or approve. Don't run the lessons through
 | 6 | `/build:06-hero` | The face: a hero still through the gate, inspected for fabricated text; video optional |
 | 7 | `/build:07-website` | The storefront: a one-page site, words first, styled from `design.md` |
 | 8 | `/build:08-assets` | The gate: a typed brief, a gated build, one asset and one refusal on record |
-| 9 | `/build:09-agents` | The cast: agents that own one job, with an allowlist and named escalations |
-| 10 | `/build:10-dashboard` | Mission Control: one view in your own tokens, reading your disk |
-| 11 | `/build:11-hermes` | The layer: scheduled, allowlisted, three refusals proved before anything runs |
+| 9 | `/build:09-agents` | The cast: one voice file, typed specs, five real tasks each, an honest log |
+| 10 | `/build:10-dashboard` | Mission Control: overview plus department pages, every tile labelled live or placeholder |
+| 11 | `/build:11-hermes` | The layer: central allowlist, five refusals proved, launchd or Docker, append-only audit |
 | 12 | `/build:12-done` | The record: review everything, ship the site if you want, name the pattern |
 | 13 | `/build:13-grow` | The engines: ads through the gate, a belief-mapped email sequence, rendered content |
 
-Lessons 1 to 12 take about three and a half hours. Lesson 13 is another
-thirty to forty-five minutes and can be run any time after.
+Lessons 1 to 12 take about four and a quarter hours. Lesson 13 is
+another thirty to forty-five minutes and can be run any time after.
 
 ## What you need
 
@@ -97,16 +97,21 @@ Free stays the default; the whole course runs without it.
   brand-website/          foundation + necessary-beliefs.md (one section
                           per belief) + design.md + hero -> a single
                           self-contained index.html with its own assets/
-  agent-forge/            a named job -> typed agent_spec.json (allowlist,
-                          forbidden list, escalations, acceptance checks)
-                          -> AGENT.md in the brand voice -> two real runs:
-                          one that worked, one that stopped and escalated
-  mission-control/        tiles with a source each -> mission_status.py
-                          reading records/ -> an index.html in your own
-                          design.md tokens, every placeholder labelled,
-                          rendered and looked at
-  hermes-ops/             agents + dashboard -> posture read back, three
-                          refusals proved, one agent on a launchd timer,
+  agent-forge/            one shared _voice.md quoted from the brand files
+                          -> typed agent_spec.json per agent (allowlist,
+                          forbidden list, escalations, scoped credential
+                          NAMES, trigger mode, dry-run) -> AGENT.md ->
+                          five real tasks each with an honest PASS/FAIL
+                          test log, including one escalation
+  mission-control/        a tile map with a source per tile ->
+                          mission_status.py labelling every value live,
+                          placeholder or missing -> an overview plus a
+                          page per department, all in your design.md
+                          tokens, refresh + cache, rendered and looked at
+  hermes-ops/             central allowlist (effective = spec INTERSECT
+                          allowlist), an escalation channel proved with a
+                          test, five refusals on record, one orchestrator
+                          on launchd or in Docker, append-only audit log,
                           a runbook with the stop command at the top
   ad-factory/             research-mined angles -> Meta-ready copy bank
                           -> gated text-free plates + brand-locked HTML
@@ -117,6 +122,7 @@ Free stays the default; the whole course runs without it.
                           HTML and rendered to PNG + captions + calendar
 .claude/settings.json     the permission rules that make the gate hold
 schema/                   brand_foundation, creative_brief, agent_spec
+.env.example              env var NAMES only; .env is gitignored
 scripts/
   validate_brief.py       stdlib-only schema validator (all three schemas)
   approval_gate.py        the human approval gate — the only path to a
@@ -127,10 +133,19 @@ scripts/
                           real credits)
   dashboard_status.py     writes status.json from what is actually on disk
   serve_dashboard.py      serves dashboard.html, refreshes on load
-  hermes_run.py           runs one agent under its own spec: allowlist and
-                          gate enforced, a dated record either way
-  hermes_schedule.py      writes the launchd job, prints by default,
-                          installs only when you ask, refuses gated agents
+  mission_status.py       reads the tile map, labels every value live /
+                          placeholder / missing, builds the agent feed
+  allowlist_build.py      collects every spec into one auditable
+                          allowlist; --check calls unreviewed tools drift
+  hermes_run.py           runs one agent under spec INTERSECT allowlist:
+                          five refusals built in, a dated record every time
+  hermes_orchestrator.py  one tick: refuses on allowlist drift, runs what
+                          is due, writes last_run and the audit line
+  hermes_schedule.py      add / install / status / stop. Prints the host
+                          job by default, installs on --yes, refuses gated
+                          and on-demand agents
+  hermes_escalate.py      routes an exception to queue, notification,
+                          webhook or email, and records whether it landed
 dashboard.html            build-progress view, reads status.json only
 records/                  everything the skills write (gitignored; empty
                           folders tracked)
@@ -158,20 +173,27 @@ records/                  everything the skills write (gitignored; empty
 - **Brand Website** reads the foundation, the beliefs, `design.md` and
   the hero if one exists. Copy first, then styled. One file plus its
   own `assets/` folder, so it deploys as-is.
-- **Agent Forge** takes a job you do by hand every week and writes it
-  down as a typed spec: what it may read, the one place it writes, the
-  tools it is allowed, what it must refuse, and what it stops for. An
-  agent only counts as built once it has done a real task and handed
-  one back.
-- **Mission Control** builds your own dashboard from `design.md`. Every
-  tile names the file behind it, anything not live is labelled a
-  placeholder in the tile, and the agent feed comes straight out of
-  `records/agents/`.
-- **Hermes** ties the two together and puts one agent on a timer in
-  your own environment. Three refusals are proved first: a tool off the
-  allowlist, a gated agent asked to run unattended, and an agent that
-  does not exist. The runbook opens with the stop command, and you type
-  it once before you walk away.
+- **Agent Forge** writes the brand voice once, then takes a job you do
+  by hand every week and writes it down as a typed spec: what it may
+  read, the one place it writes, the tools it is allowed, the scoped
+  key it uses by name, what it must refuse, and what it stops for. An
+  agent counts as built after five real tasks with an honest PASS/FAIL
+  log, including one it correctly handed back.
+- **Mission Control** builds your own dashboard from `design.md`: an
+  overview plus a page per department your business actually runs, all
+  sharing one set of tokens. Every tile names the source behind it and
+  carries a LIVE or PLACEHOLDER chip in the tile, never a footnote, and
+  the agent feed comes straight out of `records/agents/`.
+- **Hermes** ties the two together and puts one agent on a host:
+  launchd on your Mac for free, or a container when "runs 24/7" has to
+  be true with the lid shut. Five refusals are proved first: a tool off
+  the effective list, a gated agent asked to run unattended, a missing
+  credential, an on-demand agent asked by the timer, and an agent that
+  does not exist. Permissions are the intersection of each spec and one
+  central allowlist, so tightening it cannot be undone by editing a
+  spec. Exceptions go to a channel you tested. The audit log is
+  append-only, and the runbook opens with the stop command, which you
+  type once before you walk away.
 
 Nothing in this loop invents a claim, a testimonial or a stat that
 isn't in the foundation or the research file. If a section needs

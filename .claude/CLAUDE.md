@@ -62,22 +62,31 @@ lesson at a time, by typing `/build:NN` commands themselves.
 - The interview in `brand-foundation` and the option pick in
   `design-tokens` are conversations here. Ask, then stop and wait.
 
-## Scheduling (Lesson 11)
+## Scheduling and secrets (Lessons 9 and 11)
 
-- **Never install a launchd job** until the student has read the
-  printed plist in this session and said to install it. Print first,
-  with `scripts/hermes_schedule.py`; `--install` is a separate
-  command, never the same breath.
-- Never schedule a gated agent. The script refuses it; do not work
-  around the refusal, and do not edit a spec to get past it.
+- **Never install a host** until the student has read the printed job
+  in this session and said to install it. `hermes_schedule.py install`
+  prints by default; `--yes` is a separate command, never the same
+  breath. The same goes for `docker compose up`: write the files,
+  print the command, let them run it.
+- Never schedule a gated or on-demand agent. The scripts refuse them;
+  do not work around a refusal, and do not edit a spec to get past one.
 - Never schedule more than one agent in the lesson, and never one
   whose escalation rules have not fired in testing.
-- The three refusals in Lesson 11 STEP 2 are run for real, before
+- The five refusals in Lesson 11 STEP 4 are run for real, before
   anything is scheduled. If one of them executes instead of refusing,
   stop the lesson and say so plainly. That is a bug, not a step to
   retry.
 - The stop command goes in the runbook and the student types it once
   themselves before the lesson closes.
+- **Never write a credential value anywhere.** Specs, records, the
+  allowlist, the plist, the compose file and this repo carry env var
+  NAMES only. Values live in the student's own `.env`, which is
+  gitignored, or in the host's environment. If a student pastes a key
+  into the session, tell them to put it in `.env` and do not repeat it
+  back.
+- Never truncate or rewrite `records/ops/audit.log`. It is append-only
+  and it is the record.
 
 ## The gate
 

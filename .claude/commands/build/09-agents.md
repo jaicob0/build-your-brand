@@ -1,5 +1,5 @@
 ---
-description: "Build Your Brand, Lesson 9: The cast. Agents that own a job, with an allowlist, named escalations, and one refusal proved on record."
+description: "Build Your Brand, Lesson 9: The cast. One voice file, agents with typed specs and scoped keys, five real tasks each, and an honest PASS/FAIL log."
 ---
 
 # /build:09-agents
@@ -15,7 +15,7 @@ description: "Build Your Brand, Lesson 9: The cast. Agents that own a job, with 
 ```
 
 **LESSON 9 OF 13 · THE CAST**
-About twenty-five minutes. You leave with two or three agents that own a named job, and one that stopped and handed the work back, on record.
+About forty minutes. You leave with two or three agents that own a named job, five real tasks tested on each, and an honest log including the ones they got wrong.
 
 ---
 
@@ -29,40 +29,63 @@ judgement.
 
 This lesson runs that shape on the work that eats your week.
 
-The thing that makes it an agent rather than a prompt you keep retyping
-is the part most people skip: the list of what it must not do, and the
-list of what it stops for. We write both before anything runs.
+Three things separate this from a prompt you keep retyping, and all
+three are files: the voice they share, the fence around each one, and
+the log of what happened when you tested them on real work.
 
 ---
 
 ## STEP 1 · Name the jobs, cut them down
 
-Pick two or three jobs you do by hand every week. Say them out loud as
-one sentence each, with a verb and an object.
+Pick two or three jobs you do by hand every week. Say each as one
+sentence with a verb and an object.
 
 "Handles support" is a department. "Drafts the reply to every email
-asking where an order is" is a job. The second one can be owned. The
-first one cannot.
+asking where an order is" is a job. Only the second can be owned.
 
-For each, name the part that needs you. Every real job has one: the
-refund that is bigger than the rule, the reply that is actually a
-complaint, the invoice that does not match. That part is not a failure
-of the agent. It is the reason you can let the rest run.
+Then answer three questions per job, out loud:
 
-> **CHECK.** Two or three jobs, one sentence each, each with the part
-> that needs you named. Say `next`.
+- **How often, honestly?** Weekly or more, or it is not worth an agent.
+- **Where would a good junior get this wrong?** That is the escalation
+  boundary. Every real job has one.
+- **What is the worst thing this could do if it misreads the
+  situation?** Refund the wrong amount, email the wrong list, publish
+  something off-brand. That answer sets the fence, and whether the gate
+  is on.
+
+If you cannot answer the second one, you do not know the job well
+enough to hand it over. Do it by hand once more this week and watch
+where you hesitate.
+
+> **CHECK.** Two or three jobs, one sentence each, all three questions
+> answered. Say `next`.
 
 ---
 
-## STEP 2 · The spec, typed
+## STEP 2 · One voice, written once
 
-> **RUN (Claude, in this session):** Use `agent-forge` on the jobs from
-> STEP 1.
+> **RUN (Claude, in this session):** Use `agent-forge`, STEP 2: write
+> `records/agents/_voice.md` from my brand files.
 
-It writes `records/agents/<agent_id>/spec.json` for each: the job, what
-it owns, what it may read, the one directory it writes to, the voice
-file it speaks from, the allowlist, what it is forbidden from doing,
-and what it stops for.
+Every agent inherits that one block, so they sound like one operator
+instead of three different companies. It is quoted from
+`project-knowledge.md`, not paraphrased, because a voice that is a
+paraphrase of a paraphrase drifts inside a week.
+
+Claude writes the same reply twice for you, once through the block and
+once as a generic assistant, side by side. **If you cannot tell which
+is which, the block is not finished.** Say so and have it pull harder
+on the real sentence shapes and the USE / AVOID lists.
+
+> **CHECK.** `_voice.md` exists, and the two replies are obviously
+> different. Say `next`.
+
+---
+
+## STEP 3 · The spec, typed
+
+> **RUN (Claude, in this session):** Continue `agent-forge` to STEP 3:
+> write and validate a spec for each job from STEP 1.
 
 ```bash
 python3 scripts/validate_brief.py records/agents/<agent_id>/spec.json
@@ -70,55 +93,65 @@ python3 scripts/validate_brief.py records/agents/<agent_id>/spec.json
 
 `VALID`, or it doesn't move.
 
-Then read it as the agent would. Two fields decide whether this is safe
-to own: `allowed_tools` and `escalate_when`. An allowlist with
-"anything it needs" in it is not an allowlist. An escalation rule that
-says "if something seems wrong" has not been thought about yet, and it
-will not fire when it matters.
+Then read each one as the agent would. Six fields decide whether this
+is safe to own:
 
-The `writes` field is one directory on purpose. An agent that can write
-anywhere is an agent you cannot audit.
+| Field | What a wrong answer costs you |
+|---|---|
+| `allowed_tools` | "anything it needs" is not an allowlist |
+| `forbidden` | what it refuses even when asked directly |
+| `escalate_when` | "if something seems wrong" never fires. Use a signal: an amount, a word in a subject, a missing field |
+| `gate` | `true` the moment it spends, sends, publishes or deletes |
+| `credentials` | env var NAMES only, one scoped key per agent, so you can revoke one without touching the others |
+| `trigger` | `on-demand` means a timer may never ask. Lesson 11 enforces that |
 
-> **CHECK.** Every spec `VALID`, read with your own eyes, allowlist and
-> escalations specific enough to argue with. Say `next`.
+`writes` is one directory on purpose. An agent that can write anywhere
+is an agent you cannot audit. And `dry_run: true` is the honest setting
+while a tool is not connected: it composes the action and hands it to
+you instead of performing it.
 
----
-
-## STEP 3 · The agent, in your voice
-
-> **RUN (Claude, in this session):** Continue `agent-forge` to STEP 3
-> and STEP 4: write each `AGENT.md`, then run each agent on a real task
-> I give you.
-
-`records/agents/<agent_id>/AGENT.md` is the spec written in your brand
-voice, quoted from `project-knowledge.md` rather than summarised. The
-voice is the same one on the site. A support reply that sounds like a
-different company is a brand defect, not a support defect.
-
-Give it a real task. Not a test case you invented, something off your
-actual week. Read the output against the `acceptance` checks in the
-spec and answer pass or fail on each.
-
-> **CHECK.** Each agent has an `AGENT.md` and at least one real run in
-> `records/agents/<agent_id>/runs/`. Say `next`.
+> **CHECK.** Every spec `VALID` and read with your own eyes, with an
+> allowlist and escalations specific enough to argue with. Say `next`.
 
 ---
 
-## STEP 4 · Make one stop on purpose
+## STEP 4 · Five real tasks, logged honestly
+
+> **RUN (Claude, in this session):** Continue `agent-forge` to STEP 4
+> and STEP 5: write each `AGENT.md`, then run five real tasks per
+> agent, including the edge cases, and log them.
+
+Give it five tasks off your actual week, not invented ones, and at
+least two of them the hard cases from STEP 1. Each goes in
+`records/agents/<agent_id>/test-log.md` with the agent's real output
+and a PASS or FAIL on voice and on accuracy.
+
+Read the log yourself. The number that matters is accuracy over the
+batch, and **a correct escalation counts as a pass**, not a failure.
+
+A FAIL you tuned is worth more than a PASS nobody checked. If the log
+has no FAIL in it at all, either the tasks were too easy or someone
+rounded up.
+
+> **CHECK.** Five logged tests per agent, read by you, accuracy named
+> out loud. Say `next`.
+
+---
+
+## STEP 5 · Make one stop on purpose
 
 Give an agent a task that trips one of its own `escalate_when` rules.
 The refund over the limit. The email that is actually a complaint.
 
-It should stop, say why, and hand the work back. If it has a go at it
-anyway, the rule is written too loosely, and that is worth knowing now
-rather than at three in the morning. Tighten it and run it again.
+It should stop, say why, and hand the work back. If it has a go anyway,
+the rule is written as a feeling rather than a signal, and that is
+worth knowing now rather than at three in the morning.
 
-The run gets recorded with `"escalated": true`, next to the one that
-worked.
+Then tune and run again until you would let it handle the routine work
+unsupervised, and not a moment before.
 
 An agent with no refusal on record has guardrails nobody has tested.
-Same principle as the refusal you put on file in Lesson 8: the record
-only means something because it holds both.
+Same principle as the refusal you put on file in Lesson 8.
 
 > **CHECK.** One escalation on record, read, and the rule tightened if
 > it did not fire. Say `next`.
@@ -127,29 +160,30 @@ only means something because it holds both.
 
 ## If something goes wrong
 
-- **`INVALID` on the spec.** The message names the field. `escalate_when`
-  needs at least one entry and `allowed_tools` cannot be empty, both on
-  purpose.
-- **The agent sounds generic.** Its `voice_source` is wrong or the
-  AGENT.md paraphrased the voice rules instead of quoting them. Point it
-  at `records/brands/<brand_id>/project-knowledge.md` and rebuild the
-  file.
+- **`INVALID` on the spec.** The message names the field.
+  `escalate_when` needs at least one entry, `allowed_tools` cannot be
+  empty, and `trigger.mode` must be `schedule`, `event` or `on-demand`.
+- **The two replies in STEP 2 look the same.** The voice block
+  summarised the brand instead of quoting it. Point it back at
+  `project-knowledge.md` and ask for the real sentence shapes.
 - **It escalates everything.** The rules are too broad. An agent that
   stops on all of it owns none of it.
-- **It escalates nothing.** Usually a rule written as a feeling rather
-  than a signal. Give it something countable: an amount, a word in the
-  subject line, a missing field.
-- **You cannot name the part that needs you.** Then you do not know the
-  job well enough yet to hand it over. Do it by hand once more this
-  week and watch for where you hesitate.
+- **It escalates nothing.** Usually a rule written as a feeling. Give
+  it something countable.
+- **A key is needed.** Put the NAME in `credentials` and in
+  `.env.example`, and the value in your own `.env`, which is
+  gitignored. Never in the spec, never in a record.
+- **The tool is not connected yet.** Set `dry_run: true`. The agent
+  composes and hands back, which is a real result, not a stub.
 
 ---
 
 ## On record
 
+- `records/agents/_voice.md`, quoted from your own files
 - `records/agents/<agent_id>/spec.json`, `VALID`, one per agent
-- `records/agents/<agent_id>/AGENT.md`, in your voice, quoted from your
-  own files
+- `records/agents/<agent_id>/AGENT.md`, in your voice
+- `records/agents/<agent_id>/test-log.md`, five tasks, honest results
 - Runs on both sides: work done, and work handed back
 
 Next: `/build:10-dashboard`. One view that reads your disk and shows
