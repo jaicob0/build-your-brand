@@ -50,8 +50,13 @@ def specs() -> dict[str, dict]:
 def entry(spec: dict) -> dict:
     return {
         "job": spec["job"],
+        # The three tiers, in the order the runner applies them:
+        # runs alone / drafts for a human / refuses outright.
         "allowed_tools": sorted(spec["allowed_tools"]),
+        "human_in_the_loop": sorted(spec.get("human_in_the_loop", [])),
+        "escalate_when": sorted(spec["escalate_when"]),
         "forbidden": sorted(spec["forbidden"]),
+        "mcp": sorted(spec.get("mcp", [])),
         "gated": bool(spec["gate"]["required"]),
         "gate_trigger": spec["gate"]["trigger"],
         "credentials": sorted(spec.get("credentials", [])),
@@ -107,6 +112,12 @@ def main() -> int:
     payload = {
         "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "rule": "effective permission = spec.allowed_tools INTERSECT allowlist.allowed_tools",
+        "tiers": {
+            "allowed_tools": "runs alone, the safe and well-trodden work",
+            "human_in_the_loop": "drafted and handed over: irreversible, money-moving, reputation-risking",
+            "escalate_when": "stops and routes to the channel in records/ops/channel.json",
+            "forbidden": "refused outright, even when asked directly",
+        },
         "agents": agents,
     }
 
@@ -126,6 +137,8 @@ def main() -> int:
     for agent_id, a in agents.items():
         shape = "gated" if a["gated"] else ("dry-run" if not a["autonomous"] else "autonomous")
         print(f"  {agent_id:<24} {shape:<12} tools: {', '.join(a['allowed_tools']) or 'none'}")
+        if a["human_in_the_loop"]:
+            print(f"  {'':<24} {'':<12} drafts only: {', '.join(a['human_in_the_loop'])}")
     for n in notes:
         print(f"  - {n}")
     return 0

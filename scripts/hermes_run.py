@@ -9,9 +9,12 @@ ran, refused, escalated or failed.
 Effective permission is the INTERSECTION of the two lists, so
 tightening the central file can never be undone by editing a spec.
 
-Five refusals are built in:
+Seven refusals are built in:
+  - the kill switch is on                     -> refused:halt
   - the spec is missing or invalid            -> refused:spec
   - the tool named is off the effective list  -> refused:allowlist
+  - the action is human-in-the-loop, so it is
+    drafted and handed over, never executed   -> refused:hitl
   - a credential the spec names is not in
     the environment                           -> refused:credentials
   - the agent needs the gate and has no
@@ -19,9 +22,13 @@ Five refusals are built in:
   - the agent is on-demand and something
     other than a human asked                  -> refused:trigger
 
+Every run updates records/ops/heartbeat.json, so the dashboard can show
+which agents are alive and when each last finished cleanly. Customer
+data in a recorded output is masked before it is written.
+
 Usage:
-  python3 scripts/hermes_run.py <agent_id> --task "..." [--tool NAME] [--go]
-                                [--by human|timer]
+  python3 scripts/hermes_run.py <agent_id> --task "..." [--tool NAME]
+                                [--action NAME] [--go] [--by human|timer]
 
 Default is a check: it validates, records, prints what would run, and
 executes nothing. --go executes, and only for agents whose spec says
@@ -35,6 +42,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -47,6 +55,24 @@ OPS = ROOT / "records" / "ops"
 RUNS = OPS / "runs"
 AUDIT = OPS / "audit.log"
 ALLOWLIST = OPS / "allowlist.json"
+HEARTBEAT = OPS / "heartbeat.json"
+
+# Anything that could identify a real customer is masked before it is
+# written, so a record and a screen recording are safe to share.
+# Order matters: the longest, most specific pattern goes first, or a card
+# number gets masked as a phone number.
+MASKS = (
+    (re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+"), "[EMAIL]"),
+    (re.compile(r"(?<!\d)(?:\d[ -]?){13,16}(?!\d)"), "[CARD]"),
+    (re.compile(r"\+?\d[\d ()-]{8,}\d"), "[PHONE]"),
+    (re.compile(r"#\d{4,}"), "[ORDER#]"),
+)
+
+
+def mask(text: str) -> str:
+    for pattern, token in MASKS:
+        text = pattern.sub(token, text)
+    return text
 
 
 def now() -> str:
@@ -58,6 +84,18 @@ def audit(event: dict) -> None:
     OPS.mkdir(parents=True, exist_ok=True)
     with AUDIT.open("a") as fh:
         fh.write(json.dumps({"at": now(), **event}) + "\n")
+
+
+def heartbeat(agent_id: str, decision: str) -> None:
+    OPS.mkdir(parents=True, exist_ok=True)
+    beats = json.loads(HEARTBEAT.read_text()) if HEARTBEAT.exists() else {}
+    beat = beats.get(agent_id, {})
+    beat["last_seen"] = now()
+    beat["last_decision"] = decision
+    if decision in ("ran", "checked"):
+        beat["last_ok"] = now()
+    beats[agent_id] = beat
+    HEARTBEAT.write_text(json.dumps(beats, indent=2) + "\n")
 
 
 def record(agent_id: str, decision: str, detail: dict) -> Path:
@@ -75,6 +113,7 @@ def record(agent_id: str, decision: str, detail: dict) -> Path:
     path.write_text(json.dumps(payload, indent=2))
     audit({"event": "run", "agent_id": agent_id, "decision": decision,
            "record": str(path.relative_to(ROOT))})
+    heartbeat(agent_id, decision)
     return path
 
 
@@ -117,10 +156,23 @@ def main() -> int:
     ap.add_argument("agent_id")
     ap.add_argument("--task", required=True, help="the real task, in the student's words")
     ap.add_argument("--tool", default=None, help="the tool or command this run would use")
+    ap.add_argument("--action", default=None,
+                    help="the business action this run would take, e.g. issue_refund")
     ap.add_argument("--go", action="store_true", help="execute, instead of checking")
     ap.add_argument("--by", choices=["human", "timer"], default="human",
                     help="who asked for this run. The timer passes 'timer'.")
     args = ap.parse_args()
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from hermes_halt import halted  # noqa: E402 - same directory, stdlib only
+
+    is_halted, why = halted()
+    if is_halted:
+        path = record(args.agent_id, "refused:halt", {"task": args.task, "reason": why})
+        print(f"REFUSED (halt): the kill switch is on — {why}")
+        print("Resume with: python3 scripts/hermes_halt.py --resume")
+        print(f"record: {path.relative_to(ROOT)}")
+        return 0
 
     spec, err = load_spec(args.agent_id)
     if spec is None:
@@ -138,6 +190,20 @@ def main() -> int:
         })
         print(f"REFUSED (allowlist): '{args.tool}' is not on {args.agent_id}'s effective list")
         print(f"allowed: {', '.join(tools) or 'nothing'}  ({source})")
+        print(f"record: {path.relative_to(ROOT)}")
+        return 0
+
+    if args.action and args.action in spec.get("human_in_the_loop", []):
+        path = record(args.agent_id, "refused:hitl", {
+            "task": args.task, "action": args.action,
+            "human_in_the_loop": spec.get("human_in_the_loop", []),
+        })
+        print(f"REFUSED (human in the loop): '{args.action}' is drafted, never executed alone.")
+        print("It is irreversible, moves money, or carries reputation risk. A person does it.")
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "hermes_escalate.py"),
+                        args.agent_id, "--reason",
+                        f"'{args.action}' needs a human. Drafted, not executed.",
+                        "--task", args.task])
         print(f"record: {path.relative_to(ROOT)}")
         return 0
 
@@ -175,6 +241,7 @@ def main() -> int:
             "effective_tools": tools, "allowlist_source": source,
             "dry_run": bool(spec.get("dry_run", False)),
             "credentials_missing": absent,
+            "human_in_the_loop": spec.get("human_in_the_loop", []),
             "escalate_when": spec["escalate_when"],
         })
         print(f"OK: {args.agent_id} may run this task.")
@@ -183,6 +250,8 @@ def main() -> int:
         print(f"  trigger:   {spec['trigger']['mode']} · {spec['trigger']['cadence']}")
         print(f"  tools:     {', '.join(tools) or 'nothing'}  ({source})")
         print(f"  gated:     {'yes, on ' + spec['gate']['trigger'] if gated else 'no'}")
+        hitl = spec.get("human_in_the_loop", [])
+        print(f"  drafts only: {'; '.join(hitl) if hitl else 'nothing — it executes everything it may do'}")
         print(f"  dry run:   {'yes, composes and hands back' if spec.get('dry_run') else 'no'}")
         if absent:
             print(f"  missing:   {', '.join(absent)} (would refuse on --go)")
@@ -215,6 +284,9 @@ def main() -> int:
         f"{agent_md.read_text()}\n\n"
         f"---\n{mode}\nTask: {args.task}\n"
         f"You may use only these tools: {', '.join(tools) or 'none'}.\n"
+        + (f"Draft, never execute, any of these: {', '.join(spec['human_in_the_loop'])}.\n"
+           if spec.get("human_in_the_loop") else "")
+        + 
         f"Write your output into {spec['writes']}. "
         "If any escalation rule above applies, write nothing and reply with "
         "ESCALATE followed by the reason."
@@ -227,8 +299,8 @@ def main() -> int:
         "writes": spec["writes"],
         "dry_run": bool(spec.get("dry_run", False)),
         "exit_code": proc.returncode,
-        "output": out[:4000],
-        "stderr": (proc.stderr or "").strip()[:2000],
+        "output": mask(out[:4000]),
+        "stderr": mask((proc.stderr or "").strip()[:2000]),
     })
     if escalated:
         reason = out[len("ESCALATE"):].strip(" :-\n") or "no reason given"

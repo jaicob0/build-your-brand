@@ -11,6 +11,7 @@
     "writes",
     "voice_source",
     "allowed_tools",
+    "human_in_the_loop",
     "forbidden",
     "escalate_when",
     "gate",
@@ -74,7 +75,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Named actions this agent must refuse even when asked directly."
+      "description": "Named actions this agent must refuse outright, even when asked directly. Distinct from human_in_the_loop, which it may draft for a person to execute."
     },
     "escalate_when": {
       "type": "array",
@@ -143,6 +144,20 @@
     "dry_run": {
       "type": "boolean",
       "description": "True while the agent's tools are not connected: it composes the action and hands it to a human instead of performing it."
+    },
+    "human_in_the_loop": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actions this agent may DRAFT but never execute alone: anything irreversible, anything that moves money, anything reputation-risking. The runner refuses these and routes them to a human. Empty only when the agent cannot do any of the three."
+    },
+    "mcp": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "MCP servers this agent is allowed to reach, by name. Only servers the agent has been tested against. An unvetted server is an unlocked door."
     }
   }
 }

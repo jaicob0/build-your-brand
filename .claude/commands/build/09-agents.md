@@ -15,7 +15,7 @@ description: "Build Your Brand, Lesson 9: The cast. One voice file, agents with 
 ```
 
 **LESSON 9 OF 13 · THE CAST**
-About forty minutes. You leave with two or three agents that own a named job, five real tasks tested on each, and an honest log including the ones they got wrong.
+About forty-five minutes. You leave with two or three agents that own a named job, five real tasks tested on each, and an honest log including the ones they got wrong.
 
 ---
 
@@ -99,7 +99,8 @@ is safe to own:
 | Field | What a wrong answer costs you |
 |---|---|
 | `allowed_tools` | "anything it needs" is not an allowlist |
-| `forbidden` | what it refuses even when asked directly |
+| `human_in_the_loop` | the 90/10 line: what it drafts and hands over rather than doing. Refunds, cancellations, anything public |
+| `forbidden` | what it refuses outright, never even drafts |
 | `escalate_when` | "if something seems wrong" never fires. Use a signal: an amount, a word in a subject, a missing field |
 | `gate` | `true` the moment it spends, sends, publishes or deletes |
 | `credentials` | env var NAMES only, one scoped key per agent, so you can revoke one without touching the others |
@@ -110,12 +111,47 @@ is an agent you cannot audit. And `dry_run: true` is the honest setting
 while a tool is not connected: it composes the action and hands it to
 you instead of performing it.
 
+The split between the middle two rows is the one worth sitting with.
+**Forbidden** means it never touches that, ever. **Human in the loop**
+means it does the work and stops short of the irreversible bit, so a
+refund arrives on your desk already written, needing a keystroke rather
+than ten minutes. That line is what makes an agent useful without
+making it dangerous, and the runner enforces it in Lesson 11.
+
+The access paradox, plainly: the more an agent can reach, the longer
+its `human_in_the_loop` list has to be. Power and guardrails scale
+together. Never grant a capability just in case.
+
 > **CHECK.** Every spec `VALID` and read with your own eyes, with an
 > allowlist and escalations specific enough to argue with. Say `next`.
 
 ---
 
-## STEP 4 · Five real tasks, logged honestly
+## STEP 4 · Connect the tools, scoped down
+
+> **RUN (Claude, in this session):** Continue `agent-forge`, STEP 4:
+> wire only the tools each agent's one workflow needs.
+
+MCP first where a real tool has a server: a store, an inbox, a
+helpdesk, a calendar. Then scope it down. A support agent reads orders
+and drafts replies; it does not get write access to the storefront.
+Read-only wherever the job allows, one key per agent so revoking one
+does not touch the others.
+
+Nothing connected yet? That is fine, and it is most people on the first
+pass. `dry_run: true` and the agent composes the action for you to
+send. That is a real result, not a stub, and it is the honest state for
+anything pointed at a live account on day one.
+
+Keys go in `.env` by name. Never in the spec, never in a record, never
+in this repo.
+
+> **CHECK.** Each agent reaches only what its own job needs, and
+> anything unconnected is in dry run. Say `next`.
+
+---
+
+## STEP 5 · Five real tasks, logged honestly
 
 > **RUN (Claude, in this session):** Continue `agent-forge` to STEP 4
 > and STEP 5: write each `AGENT.md`, then run five real tasks per
@@ -138,7 +174,7 @@ rounded up.
 
 ---
 
-## STEP 5 · Make one stop on purpose
+## STEP 6 · Make one stop on purpose
 
 Give an agent a task that trips one of its own `escalate_when` rules.
 The refund over the limit. The email that is actually a complaint.
@@ -158,6 +194,28 @@ Same principle as the refusal you put on file in Lesson 8.
 
 ---
 
+## STEP 7 · Make it runnable, and know how to switch it off
+
+> **RUN (Claude, in this session):** Continue `agent-forge`, STEP 8:
+> write each agent's runnable definition and `records/agents/README.md`.
+
+An agent that exists only as a markdown description is a description.
+Each one gets `agent.md`, a Claude Code subagent definition with its
+name, the tools it may use and its system prompt. Claude asks before
+copying anything into `.claude/agents/`.
+
+Then the README: a table of the cast, what each touches, what it only
+drafts, which key it uses, and the three steps to revoke access.
+
+Write the revoke steps now, while nothing has gone wrong. The morning
+a key leaks is the wrong time to work out which agent holds it.
+
+> **CHECK.** Each agent has a runnable definition, and
+> `records/agents/README.md` tells a stranger what the cast can touch
+> and how to cut it off. Say `next`.
+
+---
+
 ## If something goes wrong
 
 - **`INVALID` on the spec.** The message names the field.
@@ -173,6 +231,9 @@ Same principle as the refusal you put on file in Lesson 8.
 - **A key is needed.** Put the NAME in `credentials` and in
   `.env.example`, and the value in your own `.env`, which is
   gitignored. Never in the spec, never in a record.
+- **Everything ends up in `human_in_the_loop`.** Then the agent has no
+  job. Find the routine 90 per cent it can genuinely own; if there
+  isn't one, this is not an agent-shaped job.
 - **The tool is not connected yet.** Set `dry_run: true`. The agent
   composes and hands back, which is a real result, not a stub.
 
@@ -184,6 +245,8 @@ Same principle as the refusal you put on file in Lesson 8.
 - `records/agents/<agent_id>/spec.json`, `VALID`, one per agent
 - `records/agents/<agent_id>/AGENT.md`, in your voice
 - `records/agents/<agent_id>/test-log.md`, five tasks, honest results
+- `records/agents/<agent_id>/agent.md`, the runnable definition
+- `records/agents/README.md`, the cast and how to revoke access
 - Runs on both sides: work done, and work handed back
 
 Next: `/build:10-dashboard`. One view that reads your disk and shows

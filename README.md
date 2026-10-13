@@ -36,12 +36,12 @@ you need to read, choose or approve. Don't run the lessons through
 | 8 | `/build:08-assets` | The gate: a typed brief, a gated build, one asset and one refusal on record |
 | 9 | `/build:09-agents` | The cast: one voice file, typed specs, five real tasks each, an honest log |
 | 10 | `/build:10-dashboard` | Mission Control: overview plus department pages, every tile labelled live or placeholder |
-| 11 | `/build:11-hermes` | The layer: central allowlist, five refusals proved, launchd or Docker, append-only audit |
+| 11 | `/build:11-hermes` | The layer: central allowlist, seven refusals proved, events, kill switch, launchd or Docker |
 | 12 | `/build:12-done` | The record: review everything, ship the site if you want, name the pattern |
 | 13 | `/build:13-grow` | The engines: ads through the gate, a belief-mapped email sequence, rendered content |
 
-Lessons 1 to 12 take about four and a quarter hours. Lesson 13 is
-another thirty to forty-five minutes and can be run any time after.
+Lessons 1 to 12 take about four and a half hours. Lesson 13 is another
+thirty to forty-five minutes and can be run any time after.
 
 ## What you need
 
@@ -50,7 +50,8 @@ another thirty to forty-five minutes and can be run any time after.
 - **Claude Code**, logged in, on a Claude subscription. Pro works; Max
   is safer for Lesson 2's research pass, which runs Claude for half an
   hour straight.
-- **Python 3.**
+- **Python 3.** Node is optional, and only for the Lesson 10 generate
+  proxy.
 - **Google Chrome** at its standard path — it renders the brand guide
   PDF, the Lesson 10 dashboard check, and the Lesson 13 emails and
   carousels.
@@ -134,7 +135,13 @@ scripts/
   dashboard_status.py     writes status.json from what is actually on disk
   serve_dashboard.py      serves dashboard.html, refreshes on load
   mission_status.py       reads the tile map, labels every value live /
-                          placeholder / missing, builds the agent feed
+                          placeholder / missing, builds the agent feed.
+                          Connectors: any JSON endpoint, YouTube Data API
+                          v3 (the three-call chain), Apify datasets,
+                          Shopify counts — all optional, all keyed from
+                          the environment by name
+  proxy.js                serves the dashboard and pipes a prompt to your
+                          Claude Code login: generate buttons, no API key
   allowlist_build.py      collects every spec into one auditable
                           allowlist; --check calls unreviewed tools drift
   hermes_run.py           runs one agent under spec INTERSECT allowlist:
@@ -146,6 +153,10 @@ scripts/
                           and on-demand agents
   hermes_escalate.py      routes an exception to queue, notification,
                           webhook or email, and records whether it landed
+  hermes_events.py        event-driven work: a drop folder and a local
+                          webhook listener that queues rather than runs
+  hermes_halt.py          the kill switch. One command, every agent
+                          refuses, the pause goes on record
 dashboard.html            build-progress view, reads status.json only
 records/                  everything the skills write (gitignored; empty
                           folders tracked)
@@ -176,9 +187,10 @@ records/                  everything the skills write (gitignored; empty
 - **Agent Forge** writes the brand voice once, then takes a job you do
   by hand every week and writes it down as a typed spec: what it may
   read, the one place it writes, the tools it is allowed, the scoped
-  key it uses by name, what it must refuse, and what it stops for. An
-  agent counts as built after five real tasks with an honest PASS/FAIL
-  log, including one it correctly handed back.
+  key it uses by name, what it may draft but never execute alone, what
+  it must refuse outright, and what it stops for. An agent counts as
+  built after five real tasks with an honest PASS/FAIL log, including
+  one it correctly handed back.
 - **Mission Control** builds your own dashboard from `design.md`: an
   overview plus a page per department your business actually runs, all
   sharing one set of tokens. Every tile names the source behind it and
@@ -186,10 +198,11 @@ records/                  everything the skills write (gitignored; empty
   the agent feed comes straight out of `records/agents/`.
 - **Hermes** ties the two together and puts one agent on a host:
   launchd on your Mac for free, or a container when "runs 24/7" has to
-  be true with the lid shut. Five refusals are proved first: a tool off
-  the effective list, a gated agent asked to run unattended, a missing
-  credential, an on-demand agent asked by the timer, and an agent that
-  does not exist. Permissions are the intersection of each spec and one
+  be true with the lid shut. Seven refusals are proved first: the kill
+  switch, a tool off the effective list, an action on the
+  human-in-the-loop list, a gated agent asked to run unattended, a
+  missing credential, an on-demand agent asked by the timer, and an
+  agent that does not exist. Permissions are the intersection of each spec and one
   central allowlist, so tightening it cannot be undone by editing a
   spec. Exceptions go to a channel you tested. The audit log is
   append-only, and the runbook opens with the stop command, which you

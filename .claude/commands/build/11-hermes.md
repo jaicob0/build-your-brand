@@ -15,7 +15,7 @@ description: "Build Your Brand, Lesson 11: The layer. A central allowlist, an es
 ```
 
 **LESSON 11 OF 13 · THE LAYER**
-About forty minutes. You leave with one agent running on a host, five refusals on record, exceptions arriving somewhere you actually look, and a stop command you have typed.
+About fifty minutes. You leave with one agent running on a host, seven refusals on record, exceptions arriving somewhere you actually look, and a kill switch you have fired.
 
 ---
 
@@ -33,7 +33,7 @@ The hardening is not a feature of the agents. It is that a wrong
 instruction produces a dated refusal instead of an action, and that you
 can watch it happen before you walk away.
 
-Nothing gets scheduled until five refusals have been run and read.
+Nothing gets scheduled until seven refusals have been run and read.
 
 ---
 
@@ -124,7 +124,7 @@ Going backwards here is the lesson working.
 
 ## STEP 4 · Prove the refusals
 
-Five, for real, before anything touches a timer:
+Seven, for real, before anything touches a timer:
 
 ```bash
 # a tool off the effective list
@@ -139,8 +139,16 @@ python3 scripts/hermes_run.py <creds_id> --task "<task>" --go
 # an on-demand agent, asked by the timer instead of a human
 python3 scripts/hermes_run.py <ondemand_id> --task "<task>" --go --by timer
 
+# an action on the human-in-the-loop list: drafted, never executed
+python3 scripts/hermes_run.py <agent_id> --task "<task>" --action issue_refund
+
 # an agent that does not exist
 python3 scripts/hermes_run.py ghost --task "<task>"
+
+# the kill switch, which is the one you will reach for in a hurry
+python3 scripts/hermes_halt.py --reason "testing the switch"
+python3 scripts/hermes_run.py <agent_id> --task "<task>"
+python3 scripts/hermes_halt.py --resume
 ```
 
 Each prints a refusal, writes a dated record in `records/ops/runs/` and
@@ -152,13 +160,43 @@ Read all five.
 If any of them executes instead of refusing, stop the lesson. That is a
 real bug and it gets fixed before anything runs on its own.
 
-An untested guardrail is a belief. You have now tested five.
+The human-in-the-loop one is different from the rest, and worth
+watching closely: the refund was not thrown away, it was drafted and
+handed to you. That is the 90/10 line doing its job.
 
-> **CHECK.** Five refusals run, five records read. Say `next`.
+An untested guardrail is a belief. You have now tested seven, including
+the kill switch, which is the only one that matters at 3am.
+
+> **CHECK.** Seven refusals run, the records read, and the kill switch
+> fired and released by your own hand. Say `next`.
 
 ---
 
-## STEP 5 · Schedule one agent, then pick a host
+## STEP 5 · Events, where a timer is the wrong shape
+
+Not every job is a cadence. A ticket arrives, an order lands, a form
+comes in. The contract is one JSON file:
+
+```bash
+python3 scripts/hermes_events.py drop <agent_id> --task "<what happened>"
+python3 scripts/hermes_events.py list
+```
+
+The orchestrator drains the folder on its next tick and runs each event
+through the same seven refusals. Anything can write that file: a
+shortcut, an automation step, a script, you with an editor.
+
+For a local webhook, `python3 scripts/hermes_events.py listen`. It
+binds to `127.0.0.1`, and it queues events rather than running them, so
+a flood costs you disk and not actions. Putting it on the internet is a
+decision for another day.
+
+> **CHECK.** One event dropped and drained, or deliberately skipped
+> because all your work is scheduled. Say `next`.
+
+---
+
+## STEP 6 · Schedule one agent, then pick a host
 
 ```bash
 python3 scripts/hermes_schedule.py add <agent_id> --task "<task>" --every 60
@@ -200,27 +238,33 @@ mean it.
 
 ---
 
-## STEP 6 · Watch a tick, then write the stop command
+## STEP 7 · Watch a tick, then write the stop command
 
 ```bash
 python3 scripts/hermes_orchestrator.py --dry-run
 python3 scripts/hermes_orchestrator.py
 python3 scripts/hermes_schedule.py status
+cat records/ops/heartbeat.json
 tail -5 records/ops/audit.log
 ```
+
+The heartbeat is who is alive and when each last finished cleanly. Put
+it on Mission Control as a tile: an agent whose heartbeat stopped
+moving two days ago is exactly what a dashboard is for.
 
 The run landed, the output went where the spec said, and the dashboard
 shows it. Reload Mission Control. An agent that ran and does not appear
 there is a visibility bug, and you fix it now, while you are watching.
 
-Then `records/ops/RUNBOOK.md`, with the stop command at the top:
+Then `records/ops/RUNBOOK.md`, with both stop commands at the top:
 
 ```bash
-python3 scripts/hermes_schedule.py stop
+python3 scripts/hermes_halt.py            # every agent refuses, now
+python3 scripts/hermes_schedule.py stop   # and take the host down
 ```
 
-Type it once, now. Watch the timer unload and the container go. Then
-start it again if you want it running.
+The first is the brake and the second takes the engine out. Type both,
+now, and watch them work. Then start it again if you want it running.
 
 The runbook also carries how to inspect, how to rotate a key, and what
 to do when a run is wrong: stop first, then read, never debug a live
@@ -231,8 +275,37 @@ morning it does something you did not expect is the wrong time to learn
 the command.
 
 > **CHECK.** A tick completed and recorded, the dashboard shows it, the
-> runbook exists, and you have typed the stop command yourself. Say
+> runbook exists, and you have typed both stop commands yourself. Say
 > `next`.
+
+---
+
+## STEP 8 · Run the whole chain once, then say what is true
+
+Deployed is not working. One real task, every link, watched:
+
+1. The agent does the work it owns.
+2. Mission Control shows it, and the heartbeat moves.
+3. `records/ops/audit.log` has the line.
+4. An exception routes to your channel and does not execute.
+5. A tool off the list is refused.
+6. The kill switch halts everything, then releases.
+7. It comes back: restart the container, or stop and reinstall the
+   timer, and watch a tick fire.
+
+Then verify the gitignore rather than assuming it:
+
+```bash
+git check-ignore -v .env records/ops/audit.log
+```
+
+Now say what is actually true. If it runs on your Mac, it runs when
+your Mac is awake, and that is a real thing to own rather than a
+weakness to hide. "Running 24/7" belongs to a host that stays on, after
+you have restarted it and watched it return.
+
+> **CHECK.** The chain ran in front of you, and you can say which parts
+> you watched. Say `next`.
 
 ---
 
@@ -256,8 +329,11 @@ the command.
   is the record, the channel is the alert.
 - **The run worked but wrote somewhere unexpected.** The `writes` field
   is the only place it should land. Fix the spec, not the output.
-- **You want it off, now.** `python3 scripts/hermes_schedule.py stop`.
-  That is the whole answer.
+- **You want it off, now.** `python3 scripts/hermes_halt.py`. Every
+  agent refuses from that second, timer or not, container or not.
+- **It is still halted and you forgot why.** `--status` prints the
+  reason and when. `HERMES_HALT=1` in the environment halts it too, and
+  `--resume` cannot clear that one: unset the variable.
 
 ---
 
@@ -265,7 +341,8 @@ the command.
 
 - `records/ops/allowlist.json`, the one file to audit
 - `records/ops/channel.json`, and a test escalation you saw arrive
-- `records/ops/runs/`, five refusals and at least one real run, dated
+- `records/ops/runs/`, seven refusals and at least one real run, dated
+- `records/ops/heartbeat.json`, who is alive and when
 - `records/ops/audit.log`, append-only
 - `records/ops/schedule.json`, what is scheduled and where it runs
 - `records/ops/RUNBOOK.md`, stop command first, typed once to prove it

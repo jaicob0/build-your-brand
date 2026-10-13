@@ -13,13 +13,26 @@ A tile never carries yesterday's number, and never a guess. The page
 renders the label next to the value, so nobody quotes a placeholder by
 accident.
 
-Sources a tile can declare:
+Sources a tile can declare. The first five read your disk and need
+nothing. The rest need a key, which is always read from the environment
+by NAME and never written into this map:
+
   {"kind": "count_files", "path": "records/assets", "pattern": "*.png"}
   {"kind": "count_runs",  "decision": "built"}
   {"kind": "json_field",  "path": "records/x.json", "field": "a.b.c"}
   {"kind": "agent_runs",  "agent_id": "support-drafts"}
-  {"kind": "http",        "url_env": "BYB_METRIC_URL", "field": "data.total"}
+  {"kind": "heartbeat",   "agent_id": "support-drafts"}
   {"kind": "placeholder", "value": 128}
+
+  {"kind": "http",    "url_env": "BYB_METRIC_URL", "field": "data.total",
+                      "auth_env": "BYB_METRIC_TOKEN", "auth_header": "Authorization",
+                      "auth_prefix": "Bearer "}
+  {"kind": "youtube", "handle": "@yourhandle", "key_env": "BYB_YOUTUBE_KEY",
+                      "metric": "subscribers|views|videos|last_video_views"}
+  {"kind": "apify",   "dataset_env": "BYB_APIFY_DATASET", "token_env": "BYB_APIFY_TOKEN",
+                      "field": "0.followersCount"}
+  {"kind": "shopify", "shop_env": "BYB_SHOPIFY_SHOP", "token_env": "BYB_SHOPIFY_TOKEN",
+                      "resource": "orders|products|customers"}
 
 Usage:
   python3 scripts/mission_status.py [--print]
@@ -56,6 +69,48 @@ def dig(data, dotted: str):
         else:
             return None
     return data
+
+
+def fetch(url: str, headers: dict | None = None) -> object:
+    req = urllib.request.Request(url, headers=headers or {})
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return json.loads(r.read().decode())
+
+
+def youtube(src: dict) -> tuple[object, str, str]:
+    """The three-call chain. One call cannot answer a per-video question."""
+    key = os.environ.get(src.get("key_env", ""), "")
+    if not key:
+        return None, "placeholder", f"{src.get('key_env')} not set, nothing fetched"
+    base = "https://www.googleapis.com/youtube/v3"
+    handle = src["handle"]
+    metric = src.get("metric", "subscribers")
+    try:
+        # 1. the channel: id and the top-line counts
+        ch = fetch(f"{base}/channels?part=statistics,snippet&forHandle={handle}&key={key}")
+        items = ch.get("items") or []
+        if not items:
+            return None, "missing", f"no channel for {handle}"
+        stats = items[0]["statistics"]
+        if metric == "subscribers":
+            return int(stats.get("subscriberCount", 0)), "live", "youtube channels"
+        if metric == "views":
+            return int(stats.get("viewCount", 0)), "live", "youtube channels"
+        if metric == "videos":
+            return int(stats.get("videoCount", 0)), "live", "youtube channels"
+        # 2. recent video ids
+        channel_id = items[0]["id"]
+        search = fetch(f"{base}/search?part=snippet&channelId={channel_id}"
+                       f"&order=date&maxResults=10&type=video&key={key}")
+        ids = [i["id"]["videoId"] for i in search.get("items", []) if i.get("id", {}).get("videoId")]
+        if not ids:
+            return None, "missing", "channel has no videos yet"
+        # 3. per-video statistics
+        vids = fetch(f"{base}/videos?part=statistics&id={','.join(ids)}&key={key}")
+        views = [int(v["statistics"].get("viewCount", 0)) for v in vids.get("items", [])]
+        return (views[0] if views else 0), "live", "youtube videos"
+    except (urllib.error.URLError, KeyError, ValueError, TimeoutError) as e:
+        return None, "missing", f"{type(e).__name__}"
 
 
 def resolve(src: dict) -> tuple[object, str, str]:
@@ -99,14 +154,52 @@ def resolve(src: dict) -> tuple[object, str, str]:
             return None, "missing", f"no runs for {src['agent_id']}"
         return len(list(d.glob("*.json"))), "live", f"records/agents/{src['agent_id']}/runs"
 
+    if kind == "heartbeat":
+        p = ROOT / "records" / "ops" / "heartbeat.json"
+        if not p.exists():
+            return None, "missing", "nothing has run unattended yet"
+        beat = json.loads(p.read_text()).get(src["agent_id"])
+        if not beat:
+            return None, "missing", f"no heartbeat for {src['agent_id']}"
+        return beat.get("last_ok") or beat.get("last_seen"), "live", "records/ops/heartbeat.json"
+
     if kind == "http":
         url = os.environ.get(src.get("url_env", ""), "")
         if not url:
             return None, "placeholder", f"{src.get('url_env')} not set, nothing fetched"
+        headers = {}
+        token = os.environ.get(src.get("auth_env", ""), "")
+        if token:
+            headers[src.get("auth_header", "Authorization")] = src.get("auth_prefix", "Bearer ") + token
         try:
-            with urllib.request.urlopen(url, timeout=10) as r:
-                payload = json.loads(r.read().decode())
-            return dig(payload, src["field"]), "live", src.get("url_env")
+            return dig(fetch(url, headers), src["field"]), "live", src.get("url_env")
+        except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as e:
+            return None, "missing", f"{type(e).__name__}"
+
+    if kind == "youtube":
+        return youtube(src)
+
+    if kind == "apify":
+        dataset = os.environ.get(src.get("dataset_env", ""), "")
+        token = os.environ.get(src.get("token_env", ""), "")
+        if not (dataset and token):
+            return None, "placeholder", "apify dataset or token not set, nothing fetched"
+        url = f"https://api.apify.com/v2/datasets/{dataset}/items?token={token}&limit=10"
+        try:
+            return dig(fetch(url), src["field"]), "live", "apify dataset"
+        except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as e:
+            return None, "missing", f"{type(e).__name__}"
+
+    if kind == "shopify":
+        shop = os.environ.get(src.get("shop_env", ""), "")
+        token = os.environ.get(src.get("token_env", ""), "")
+        if not (shop and token):
+            return None, "placeholder", "shopify shop or token not set, nothing fetched"
+        resource = src.get("resource", "orders")
+        url = f"https://{shop}/admin/api/2024-10/{resource}/count.json"
+        try:
+            payload = fetch(url, {"X-Shopify-Access-Token": token})
+            return payload.get("count"), "live", f"shopify {resource}"
         except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as e:
             return None, "missing", f"{type(e).__name__}"
 

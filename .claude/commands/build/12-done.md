@@ -34,8 +34,9 @@ records/website/<brand_id>/   the site, with its own assets/
 records/agents/               _voice.md, and per agent: spec, AGENT.md,
                               test-log.md, its runs
 records/mission-control/      the tile map, your dashboard, the render
-records/ops/                  allowlist, audit log, schedule, runbook,
-                              what ran unattended and what it refused
+records/ops/                  allowlist, audit log, heartbeat, channel,
+                              schedule, runbook, events, and every run
+                              that happened without you watching
 ```
 
 Files on your machine, in a structure someone else could audit. Not a
@@ -133,8 +134,8 @@ reel.
   coming back to a channel you proved
 - One view that reads your disk, in your own tokens, every number
   carrying where it came from
-- A layer that ran without you, five refusals on record, and a stop
-  command you have typed
+- A layer that ran without you, seven refusals on record, and a kill
+  switch you have fired yourself
 - A record of every decision, including the refusals
 
 ---

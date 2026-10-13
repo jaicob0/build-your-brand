@@ -47,8 +47,8 @@ By the end of Lesson 12, all from an empty folder:
   honest log of what they got wrong
 - Mission Control: an overview and a page per department, in your own
   tokens, every number labelled with where it came from
-- An operations layer running on a host of your choosing, with five
-  refusals and an append-only audit log on record
+- An operations layer running on a host of your choosing, with seven
+  refusals, a kill switch you have fired, and an append-only audit log
 
 Lesson 13 adds the engines: ads, email and content that read the same
 foundation.
@@ -67,9 +67,9 @@ business. That comes after. First, the brand.
 | 6 | The face: hero through the gate | 20 min |
 | 7 | The storefront: the site | 20 min |
 | 8 | The gate: brief, build, refuse | 15 min |
-| 9 | The cast: agents, five real tests each | 40 min |
-| 10 | Mission Control: overview + department pages | 35 min |
-| 11 | The layer: Hermes, hosted and refusable | 40 min |
+| 9 | The cast: agents, five real tests each | 45 min |
+| 10 | Mission Control: overview + department pages | 40 min |
+| 11 | The layer: Hermes, hosted and refusable | 50 min |
 | 12 | The record: review and ship | 10 min |
 | 13 | The engines: ads, email, content | 30 to 45 min |
 

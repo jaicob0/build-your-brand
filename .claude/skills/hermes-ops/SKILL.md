@@ -97,7 +97,7 @@ is a normal outcome.
 
 ### Step 4 — Prove the refusals
 
-Five, for real, before anything touches a timer:
+Seven, for real, before anything touches a timer:
 
 ```bash
 # a tool off the effective list
@@ -112,17 +112,52 @@ python3 scripts/hermes_run.py <creds_id> --task "<task>" --go
 # an on-demand agent, asked by the timer rather than a human
 python3 scripts/hermes_run.py <ondemand_id> --task "<task>" --go --by timer
 
+# an action on the human-in-the-loop list: drafted, never executed
+python3 scripts/hermes_run.py <agent_id> --task "<task>" --action issue_refund
+
 # an agent that does not exist
 python3 scripts/hermes_run.py ghost --task "<task>"
+
+# the kill switch, which is the one guardrail they will reach for in a hurry
+python3 scripts/hermes_halt.py --reason "testing the switch"
+python3 scripts/hermes_run.py <agent_id> --task "<task>"
+python3 scripts/hermes_halt.py --resume
 ```
 
 Each refuses, writes a dated record in `records/ops/runs/` and appends
 to `records/ops/audit.log`. Open them and read them with the student.
 
+The human-in-the-loop refusal also routes to the escalation channel,
+because that one is not an error: the work was drafted and a person
+has to finish it.
+
 If any executes instead of refusing, stop. That is a real bug in the
 layer and it gets fixed before anything runs on its own.
 
-### Step 5 — Schedule, then pick a host
+### Step 5 — Event-driven work, where a timer is the wrong shape
+
+Some jobs are not a cadence. A ticket arrives, an order lands, a form
+is submitted. The contract is one JSON file in
+`records/ops/events/inbox/`, and the orchestrator drains the folder on
+its next tick, running each event through the same refusals.
+
+```bash
+python3 scripts/hermes_events.py drop <agent_id> --task "<what happened>"
+python3 scripts/hermes_events.py list
+```
+
+Anything can write that file: a shortcut, an automation step, a script,
+the student with an editor. For a local webhook:
+
+```bash
+python3 scripts/hermes_events.py listen --port 8799
+```
+
+It binds to `127.0.0.1` only, and it queues events rather than running
+them, so a flood costs disk and not actions. Exposing it to the
+internet is a decision for later and not part of this lesson.
+
+### Step 6 — Schedule, then pick a host
 
 Add the least dangerous agent to the schedule:
 
@@ -158,14 +193,19 @@ and it needs Docker and a machine that stays on.
 Never pass `--yes` in the same breath as the first print. Never
 schedule more than one agent in this lesson.
 
-### Step 6 — Watch a tick, then write the runbook
+### Step 7 — Watch a tick, then write the runbook
 
 ```bash
 python3 scripts/hermes_orchestrator.py --dry-run   # what is due
 python3 scripts/hermes_orchestrator.py             # run it once, by hand
 python3 scripts/hermes_schedule.py status
+cat records/ops/heartbeat.json                     # who is alive, and when
 tail -5 records/ops/audit.log
 ```
+
+Every run updates the heartbeat, so a tile on Mission Control can show
+when each agent last finished cleanly. An agent whose heartbeat has
+stopped moving is the thing a dashboard exists to make obvious.
 
 The run landed, the output went where the spec said, and Mission
 Control shows it. Reload the dashboard. An agent that ran and does not
@@ -178,7 +218,8 @@ Then write `records/ops/RUNBOOK.md`:
 # Hermes runbook
 
 ## Stop everything
-python3 scripts/hermes_schedule.py stop
+python3 scripts/hermes_halt.py            # kill switch: every agent refuses, now
+python3 scripts/hermes_schedule.py stop   # and take the host down
 
 Running:     [agents, cadence, host]
 Exceptions:  [channel, and where the queue is]
@@ -207,6 +248,39 @@ The stop command goes at the top, and the student types it once, now,
 to confirm it works. Someone who cannot stop the system does not own
 the system.
 
+### Step 8 — Verify the whole chain, then say it plainly
+
+Deployed is not working. Run one real task through every link in front
+of the student, and report what actually happened:
+
+1. **The agent does the work.** A genuine task it owns, within its
+   allowlist, in the brand voice.
+2. **The dashboard shows it.** The run appears in the feed and the
+   heartbeat moves.
+3. **The audit log recorded it**, appended, with the decision.
+4. **An exception routes.** Trigger something that should escalate.
+   Confirm it did not execute, that it reached the channel, and that it
+   is in the log.
+5. **A guardrail refuses.** Ask for a tool off the effective list.
+   Confirm a refusal, not an execution.
+6. **The kill switch halts everything.** Fire it, confirm the next run
+   refuses, then resume.
+7. **It comes back.** On Docker, `docker compose restart` and confirm
+   the container returns and ticks. On launchd, stop and reinstall and
+   confirm a tick fires.
+
+Also verify, do not assume, that `.gitignore` covers `.env`,
+`records/ops/audit.log` and anything else local:
+
+```bash
+git check-ignore -v .env records/ops/audit.log
+```
+
+**Do not call the layer live until that chain has run in front of
+you.** Say which parts you watched and which you did not. "Running
+24/7" is only true on a host that stays on, and only after you have
+restarted something and watched it come back.
+
 ## Hard rules
 
 - Never schedule a gated or on-demand agent. The scripts refuse them;
@@ -219,7 +293,11 @@ the system.
   channel, and the channel is proved with `--test`.
 - Never truncate or rewrite `records/ops/audit.log`.
 - Never claim the layer is running until a tick has completed and left
-  a record.
+  a record, and never claim 24/7 on a laptop.
+- Never mount an MCP server or a skill the agents have not been tested
+  against. An unvetted tool is an unlocked door.
+- Never execute a `human_in_the_loop` action. It is drafted and handed
+  over, always.
 
 ## On record
 
@@ -228,4 +306,6 @@ the system.
 - `records/ops/runs/` with five refusals and one real run
 - `records/ops/audit.log`, append-only
 - `records/ops/schedule.json`, what is scheduled and on what cadence
+- `records/ops/heartbeat.json`, who is alive and when they last
+  finished cleanly
 - `records/ops/RUNBOOK.md`, stop command first, typed once to prove it

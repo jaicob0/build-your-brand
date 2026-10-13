@@ -78,10 +78,27 @@ Write `records/mission-control/sources.json`, which
 }
 ```
 
-Source kinds: `count_files`, `count_runs`, `json_field`, `agent_runs`,
-`http` (a JSON endpoint whose URL comes from a named env var), and
-`placeholder`. The script labels each result `live`, `placeholder` or
-`missing` and never carries a stale number forward.
+Source kinds that read the disk and need nothing: `count_files`,
+`count_runs`, `json_field`, `agent_runs`, `heartbeat`, `placeholder`.
+
+Source kinds that need a key, all optional, all reading the key from
+the environment by name:
+
+| Kind | What it does | Needs |
+|---|---|---|
+| `http` | any JSON endpoint, optional bearer auth | `url_env`, `auth_env` |
+| `youtube` | the three-call chain: channel, then search, then videos. One call cannot answer a per-video question | `key_env`, `handle` |
+| `apify` | reads an actor's dataset after you have run it | `token_env`, `dataset_env` |
+| `shopify` | Admin API counts, read-only scopes | `shop_env`, `token_env` |
+
+Anything else with a documented REST endpoint goes through `http` with
+its token in `auth_env`. Prefer an MCP server where one exists and the
+agent already uses it.
+
+The script labels each result `live`, `placeholder` or `missing`, and
+never carries a stale number forward. **A tile whose key is absent
+renders as a labelled placeholder, never as a zero**, so the free path
+builds the whole dashboard and wires the numbers up later.
 
 Also write `records/mission-control/scope.md` in plain words: every
 tile, the question it answers, its source, and its state. The student
@@ -140,6 +157,12 @@ mirrors it. Inline CSS driven by the Step 2 properties, reading
   label face, and a state chip reading `LIVE` or `PLACEHOLDER` **in
   the tile**, never in a footnote. A `missing` tile says missing and
   shows no number at all.
+- **Blur and label any real figure** that identifies a person or an
+  order: `[CUSTOMER]`, `[ORDER#]`, a masked total behind a light blur
+  that lifts on hover. The screen has to be safe to record and share.
+- **Empty states in the brand voice**, from `brand-guide.html`. "No
+  content yet" written the way the brand writes.
+- **Loading states per tile** while a connected pull is in flight.
 - **Sparklines** where a tile is time-series: a small inline SVG
   helper taking an array. No chart library.
 - **The agent feed**: newest first, from `status.json`, showing what
@@ -179,7 +202,7 @@ For a tile pulling from a real endpoint, the URL comes from an env var
 named in `sources.json`. Never paste a key into the HTML, a record or
 this repo.
 
-### Step 6 — Verify by looking
+### Step 6 — First look
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
@@ -198,12 +221,74 @@ Open the PNG and check three things in this order:
 Exit codes do not tell you a page is right. Looking does. Twice is
 normal.
 
+### Step 7 — Optional, only if a real workflow needs it
+
+Both are local, both are free, neither gets hosted.
+
+**`scripts/proxy.js` — generate from the dashboard, with no API key.**
+Built-in Node modules only. It serves the dashboard and accepts
+`POST /generate`, piping the prompt to the Claude Code CLI the student
+is already logged into.
+
+```bash
+node scripts/proxy.js
+open http://localhost:3001/records/mission-control/index.html
+```
+
+Open it through that URL, not `file://`, or the page cannot reach the
+proxy. Wire any generate button to it: a reply draft, an email, a
+caption. Show a brand-voiced generating state, then drop the result
+into an editable textarea. Anything it writes obeys the same proof
+discipline as the agents: no claim, stat or testimonial that is not in
+the brand files.
+
+**A board that remembers, with no backend.** For a pipeline or kanban
+page: serialise the board to a namespaced `localStorage` key
+(`<brand>_pipeline_board`) after every move and restore it on load. Use
+a second shared key (`<brand>_pipeline_inbox`) as the glue between
+pages: one page writes an item, the pipeline page reads it on load,
+injects it as a card and clears the key. That is how the pages talk to
+each other without a server.
+
+### Step 8 — Verify on brand, then capture it
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless=new --disable-gpu --hide-scrollbars \
+  --window-size=1440,2200 --virtual-time-budget=8000 \
+  --screenshot=records/mission-control/preview.png \
+  http://localhost:8788/records/mission-control/index.html
+```
+
+Open the PNG and check, fixing and re-capturing until each holds:
+
+- **The fonts from `design.md` actually loaded**, rather than falling
+  back to a system face. Compare a heading against the brand guide.
+- **The palette is the brand's**, not a stock dashboard look.
+- **The logo is visible and correctly treated.** A dark logo on a dark
+  canvas needs the brand's light variant.
+- **The accent is status and emphasis only**, not every border.
+- **Nav and active state correct on every page**, no overlaps.
+- **Every `LIVE` chip sits on a card backed by a real pull**, and
+  everything else says placeholder.
+- **Escalations read first** in the feed.
+- **It collapses to one column** at 390 wide.
+
+A top-anchored headless screenshot will not fire scroll-reveal motion,
+so interior panels can look empty. Capture a tall window, or set the
+fade-in elements visible for the shot.
+
+**If it looks like a generic template rather than the brand, the design
+system did not bind.** Go back to Step 2, fix the tokens, re-capture.
+
 ## Hard rules
 
 - Never invent a number. Missing is missing.
 - Never style outside `design.md`.
 - Never put a key in the HTML, a record or the repo.
 - Never ship a tile whose source is "the student said so".
+- Never show a real customer, order or revenue figure unmasked.
+- Never host the proxy or the board. Local only, `127.0.0.1`.
 - Never let a page drift from the overview's tokens or nav.
 
 ## On record
@@ -211,4 +296,6 @@ normal.
 - `records/mission-control/sources.json` and `scope.md`
 - `records/mission-control/status.json`, from the script
 - `index.html` plus one page per department, same tokens, same nav
-- `records/mission-control/preview.png`, the render you looked at
+- `records/mission-control/preview.png`, the full-page render you
+  looked at
+- `scripts/proxy.js` only if a real workflow needed it

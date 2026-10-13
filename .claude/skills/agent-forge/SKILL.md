@@ -92,9 +92,17 @@ Fill these from the student's own answers:
 - `voice_source` — the brand file behind `_voice.md`.
 - `allowed_tools` — the allowlist. Name tools and commands. Never `*`,
   never "anything it needs".
-- `forbidden` — what it refuses even when asked directly. Sending
-  outside, spending, publishing and deleting belong here unless the
-  gate covers them.
+- `human_in_the_loop` — the actions it may **draft but never execute
+  alone**: anything irreversible, anything that moves money, anything
+  that carries reputation risk. This is the 90/10 line. The agent runs
+  the safe, well-trodden 90 per cent by itself and hands the rest over
+  with the work already done. The runner refuses these and routes them
+  to a person, so getting this list right is what lets the agent be
+  useful without being dangerous.
+- `forbidden` — what it refuses outright, even when asked directly.
+  Different from the list above: forbidden is never drafted at all.
+- `mcp` — the MCP servers this agent may reach, by name, and only ones
+  it has been tested against. An unvetted server is an unlocked door.
 - `escalate_when` — the Step 1 judgement answer, written as signals a
   script could check: an amount, a word in a subject line, a missing
   field. At least one.
@@ -123,7 +131,26 @@ python3 scripts/validate_brief.py records/agents/<agent_id>/spec.json
 `VALID`, or it doesn't move. Show the student the spec and let them
 read it before anything is built from it.
 
-### Step 4 — The agent file
+### Step 4 — Connect the tools, scoped down
+
+Wire only what one workflow needs, nothing more.
+
+- **Prefer MCP** for real tools: a store, an email platform, a
+  helpdesk, a calendar. Configure the server, confirm it
+  authenticates, and name in `allowed_tools` the exact calls the agent
+  may make. Name the server in `mcp`.
+- **Scope the permission to the minimum.** A support agent reads
+  orders and drafts replies; it does not get write access to the
+  storefront. Read-only wherever the job allows.
+- **One key per agent**, so revoking one does not touch the others.
+- **The access paradox, said out loud in the spec:** the more an agent
+  can do, the longer its `human_in_the_loop` list has to be. Power and
+  guardrails scale together. Never grant a capability just in case.
+- **Not connected yet?** `dry_run: true`. It composes the action and
+  hands it over. That is a real result, not a stub, and it is the
+  honest state for anything touching a live account on day one.
+
+### Step 5 — The agent file
 
 Write `records/agents/<agent_id>/AGENT.md`: the spec in the brand's
 voice, in the order the agent reads it.
@@ -150,7 +177,7 @@ voice, in the order the agent reads it.
 [acceptance, as a checklist]
 ```
 
-### Step 5 — Five real tasks, logged honestly
+### Step 6 — Five real tasks, logged honestly
 
 Five tasks per agent, drawn from the student's actual recent work, and
 at least two of them the edge cases from Step 1. Not invented test
@@ -185,19 +212,59 @@ worth more than a perfect one nobody can trust. Mask real customer data
 in the log — `[CUSTOMER]`, `[ORDER#]`, `[EMAIL]` — so it is safe to
 share or screen-record.
 
-### Step 6 — Make one stop, then tune
+### Step 7 — Make one stop, then tune
 
 Give each agent a task that trips one of its own `escalate_when` rules.
 It stops, says why, and hands back. If it has a go anyway, the rule is
 written as a feeling rather than a signal: tighten it and run again.
 
-Loop Steps 5 and 6 until the student would let it run unsupervised on
+Loop Steps 6 and 7 until the student would let it run unsupervised on
 the routine work and not a moment before. Tighten any allowlist that
 let something risky through. Loosen any rule crying wolf on safe cases.
 
+### Step 8 — Make it runnable, and write down how to switch it off
+
+An agent that only exists as a markdown file is a description. Give
+each one a runnable definition the student can invoke by name:
+
+- **A Claude Code subagent** is the default. Write
+  `records/agents/<agent_id>/agent.md` with `name`, `description`, the
+  `tools` it is allowed, and the system prompt: role, the `_voice.md`
+  block, then the guardrails. Offer to copy it into `.claude/agents/`
+  so it is invokable in this project. Ask before copying.
+- **A skill** instead, if the workflow is a procedure invoked by name.
+- **A script**, only when the work is genuinely deterministic.
+
+Keep it framework-light: Claude Code subagents or skills plus MCP. No
+heavy agent framework, nothing that ties the build to one vendor. The
+artifact should still make sense if the brand swaps helpdesk next year.
+
+Then write `records/agents/README.md`, which is the page a stranger
+reads to understand the cast:
+
+```
+# The cast
+
+| Agent | Job | Runs | Touches | Drafts only | Key |
+|---|---|---|---|---|---|
+| <id> | <job sentence> | schedule 60m | <reads/writes> | <hitl list> | <ENV NAME> |
+
+## How to run one
+python3 scripts/hermes_run.py <agent_id> --task "..."       # check, runs nothing
+python3 scripts/hermes_run.py <agent_id> --task "..." --go   # run it
+
+## How to revoke access
+1. Remove the tool from records/ops/allowlist.json and rebuild.
+2. Revoke the key at the provider, then clear it from .env.
+3. Run the agent in check mode and confirm it now refuses.
+```
+
 ## Hard rules
 
-- Never give an agent a tool the student has not approved by name.
+- Never give an agent a tool, or an MCP server, the student has not
+  approved by name.
+- Never put an irreversible, money-moving or reputation-risking action
+  in `allowed_tools`. It belongs in `human_in_the_loop` or `forbidden`.
 - Never write a credential value anywhere. Names only, in the spec and
   in `.env.example`.
 - Never run an agent against a live account, inbox or store in this
@@ -215,4 +282,6 @@ let something risky through. Loosen any rule crying wolf on safe cases.
 - `records/agents/<agent_id>/spec.json`, `VALID`
 - `records/agents/<agent_id>/AGENT.md`
 - `records/agents/<agent_id>/test-log.md`, five tasks, honest results
+- `records/agents/<agent_id>/agent.md`, the runnable definition
 - `records/agents/<agent_id>/runs/`, including one escalation
+- `records/agents/README.md`, including how to revoke access
