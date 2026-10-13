@@ -2,13 +2,17 @@
   "permissions": {
     "ask": [
       "Bash(*approval_gate.py *)",
-      "Bash(*approval_gate.py)"
+      "Bash(*approval_gate.py)",
+      "Bash(*hermes_schedule.py * --install*)",
+      "Bash(*hermes_run.py * --go*)"
     ],
     "deny": [
       "Bash(*hephaestus_build.py *)",
       "Bash(*hephaestus_build.py)",
       "Bash(higgsfield generate *)",
-      "Bash(*/higgsfield generate *)"
+      "Bash(*/higgsfield generate *)",
+      "Bash(launchctl load *)",
+      "Bash(launchctl bootstrap *)"
     ]
   }
 }

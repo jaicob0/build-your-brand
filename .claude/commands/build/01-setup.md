@@ -14,8 +14,8 @@ description: "Build Your Brand, Lesson 1: The toolchain. Confirm the tools and t
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 1 OF 10 · THE TOOLCHAIN**
-About five minutes. You leave with the tools confirmed, nine skills visible, and a dashboard that reads your disk.
+**LESSON 1 OF 13 · THE TOOLCHAIN**
+About five minutes. You leave with the tools confirmed, twelve skills visible, and a dashboard that reads your disk.
 
 ---
 
@@ -31,7 +31,7 @@ refused. You practise on a brand because a brand is a whole business
 in miniature: evidence, a contract, a design system, a book, a face,
 a storefront, a factory.
 
-By the end of Lesson 9, all from an empty folder:
+By the end of Lesson 12, all from an empty folder:
 
 - A researched brand foundation: nine files, including a copywriter
   prompt you can paste into any assistant
@@ -43,8 +43,12 @@ By the end of Lesson 9, all from an empty folder:
   through the gate
 - A one-page site with nothing on it you can't back
 - One finished asset and one refusal, both on record
+- Agents that own a named job, with an allowlist and named escalations
+- Mission Control: one view in your own tokens, reading your disk
+- An operations layer that ran a job without you, and refused three
+  things on record
 
-Lesson 10 adds the engines: ads, email and content that read the same
+Lesson 13 adds the engines: ads, email and content that read the same
 foundation.
 
 This free run is one function of a larger build. The Creative
@@ -61,18 +65,21 @@ business. That comes after. First, the brand.
 | 6 | The face: hero through the gate | 20 min |
 | 7 | The storefront: the site | 20 min |
 | 8 | The gate: brief, build, refuse | 15 min |
-| 9 | The record: review and ship | 10 min |
-| 10 | The engines: ads, email, content | 30 to 45 min |
+| 9 | The cast: agents that own a job | 25 min |
+| 10 | Mission Control: your own view | 25 min |
+| 11 | The layer: Hermes, scheduled and refusable | 30 min |
+| 12 | The record: review and ship | 10 min |
+| 13 | The engines: ads, email, content | 30 to 45 min |
 
 Everything lands as files you can open, diff and audit. Nothing lives
 in a chat you'll never scroll back to.
 
 **What you need:** a Mac, Claude Code logged in on a Claude
 subscription (Pro works; Max is safer for Lesson 2's research), Python
-3, Google Chrome, a free ChatGPT account, and about three hours. No
+3, Google Chrome, a free ChatGPT account, and about four hours. No
 design tools, no API keys, no paid image or video accounts.
 
-Image and video generation in Lessons 6, 8 and 10 runs on the **free
+Image and video generation in Lessons 6, 8 and 13 runs on the **free
 path**: the gate prints a paste-ready prompt, you generate in ChatGPT
 (free) — ChatGPT for images, ChatGPT/Sora for video — download the
 result, and drop it in the repo. Free tiers have daily limits; if you
@@ -95,11 +102,12 @@ python3 --version
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --version
 ```
 
-Both print a version. Chrome renders the brand guide PDF and the
-Lesson 10 assets; if it isn't at that path, install it before Lesson 5.
+Both print a version. Chrome renders the brand guide PDF, the Lesson 10
+dashboard check and the Lesson 13 assets; if it isn't at that path,
+install it before Lesson 5.
 
 Log into ChatGPT in your browser now if you aren't already — Lessons
-6, 8 and 10 generate images there, free, and hitting a daily limit just
+6, 8 and 13 generate images there, free, and hitting a daily limit just
 means finishing tomorrow.
 
 > **CHECK.** Python and Chrome report versions. ChatGPT logged in.
@@ -114,9 +122,10 @@ here:
 
 > list your available skills
 
-Nine names come back: `brand-foundation`, `design-tokens`,
+Twelve names come back: `brand-foundation`, `design-tokens`,
 `brand-guide`, `aphrodite-direction`, `hephaestus-production`,
-`brand-website`, `ad-factory`, `email-sequence`, `content-engine`.
+`brand-website`, `agent-forge`, `mission-control`, `hermes-ops`,
+`ad-factory`, `email-sequence`, `content-engine`.
 None? You opened `claude` outside the repo. Skills are project-scoped:
 `cd` in and start again.
 

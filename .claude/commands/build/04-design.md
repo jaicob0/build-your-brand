@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 4: The tokens. Choose a visual direction 
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 4 OF 10 · THE TOKENS**
+**LESSON 4 OF 13 · THE TOKENS**
 About ten minutes. You leave with a direction you chose, locked into `design.md`.
 
 ---

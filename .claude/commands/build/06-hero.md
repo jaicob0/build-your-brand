@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 6: The face. A hero still through the gat
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 6 OF 10 · THE FACE**
+**LESSON 6 OF 13 · THE FACE**
 About twenty minutes. You leave with a hero still that went through the gate and that you inspected up close.
 
 ---

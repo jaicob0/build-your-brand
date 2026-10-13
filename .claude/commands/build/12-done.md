@@ -1,8 +1,8 @@
 ---
-description: "Build Your Brand, Lesson 9: The record. Review every file, ship the site if you want, and name the pattern you'll reuse."
+description: "Build Your Brand, Lesson 12: The record. Review every file, ship the site if you want, and name the pattern you'll reuse."
 ---
 
-# /build:09-done
+# /build:12-done
 
 ```
      ██  ▓▓▓▓▓  ▓▓  ██████  ██████  ██████
@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 9: The record. Review every file, ship th
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 9 OF 10 · THE RECORD**
+**LESSON 12 OF 13 · THE RECORD**
 About ten minutes. You leave with the whole build confirmed against the disk, and a next move for your own brand.
 
 ---
@@ -31,6 +31,9 @@ records/assets/               hero still (and video, if you built it),
 records/briefs/               every brief written
 records/runs/                 every decision, approved or refused, dated
 records/website/<brand_id>/   the site, with its own assets/
+records/agents/               every agent: spec, AGENT.md, its runs
+records/mission-control/      your own dashboard, and the render of it
+records/ops/                  what ran unattended, and what it refused
 ```
 
 Files on your machine, in a structure someone else could audit. Not a
@@ -124,12 +127,15 @@ reel.
 - A design system every build obeys
 - A hero and a site, both traceable to one source of truth
 - A gate that means nothing is made without you
+- Agents that own a job, with the exceptions coming back to you
+- One view that reads your disk, in your own tokens
+- A layer that ran without you, and a stop command you have typed
 - A record of every decision, including the refusals
 
 ---
 
 Two things are still here whenever you want them: the site ships in
-STEP 2 above, and `/build:10-grow` runs the ads, email and content
+STEP 2 above, and `/build:13-grow` runs the ads, email and content
 engines off this same foundation. Neither expires.
 
 ---
@@ -152,7 +158,7 @@ it.
 You have already done the hard part. You watched it hold with your own
 hands on the keyboard. What's left is a seat.
 
-**Build yours: https://thecreativearchitect.uk/?src=lesson9**
+**Build yours: https://thecreativearchitect.uk/?src=lesson12**
 
 Founding seats are on that page. Go while `records/runs/` is still
 warm and you remember exactly what it felt like to type `n` and have

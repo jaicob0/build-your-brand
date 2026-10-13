@@ -7,9 +7,9 @@ actually use: required, type, enum, pattern, minLength, minItems,
 additionalProperties, one level of nested object.
 
 Usage:
-  python3 scripts/validate_brief.py <file.json> [--schema creative_brief|brand_foundation]
-If --schema is omitted, auto-detects by looking for "brief_id" (creative_brief)
-vs "brand_id" (brand_foundation) in the file.
+  python3 scripts/validate_brief.py <file.json> [--schema creative_brief|brand_foundation|agent_spec]
+If --schema is omitted, auto-detects by looking for "brief_id" (creative_brief),
+"brand_id" (brand_foundation) or "agent_id" (agent_spec) in the file.
 Exit 0 + "VALID" on success. Exit 1 + list of errors on failure.
 """
 from __future__ import annotations
@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS = {
     "creative_brief": ROOT / "schema" / "creative_brief.schema.json",
     "brand_foundation": ROOT / "schema" / "brand_foundation.schema.json",
+    "agent_spec": ROOT / "schema" / "agent_spec.schema.json",
 }
 
 
@@ -117,7 +118,9 @@ def main() -> int:
 
     schema_name = args.schema
     if schema_name is None:
-        if "brand_id" in data:
+        if "agent_id" in data:
+            schema_name = "agent_spec"
+        elif "brand_id" in data:
             schema_name = "brand_foundation"
         else:
             schema_name = "creative_brief"

@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 3: The contract. Validate the foundation,
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 3 OF 10 · THE CONTRACT**
+**LESSON 3 OF 13 · THE CONTRACT**
 About ten minutes. You leave with a validated contract you have read and corrected.
 
 ---

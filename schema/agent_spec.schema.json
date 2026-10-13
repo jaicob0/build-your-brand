@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "agent_spec",
+  "type": "object",
+  "required": [
+    "agent_id",
+    "created_at",
+    "job",
+    "owns",
+    "reads",
+    "writes",
+    "voice_source",
+    "allowed_tools",
+    "forbidden",
+    "escalate_when",
+    "gate",
+    "acceptance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "URL-safe slug, unique per agent. Also the folder name under records/agents/."
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO 8601 timestamp."
+    },
+    "job": {
+      "type": "string",
+      "minLength": 10,
+      "description": "One sentence: the job this agent owns. One job, not a department."
+    },
+    "owns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "The concrete steps of that job this agent performs end to end."
+    },
+    "reads": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Paths or named sources the agent is allowed to read. Anything not listed is out of scope."
+    },
+    "writes": {
+      "type": "string",
+      "minLength": 3,
+      "description": "The single directory this agent writes into. One agent, one output location."
+    },
+    "voice_source": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Path to the file that fixes its voice, normally records/brands/<brand_id>/project-knowledge.md."
+    },
+    "allowed_tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "The allowlist. Tool or command names the agent may use. Empty means it may do nothing, so it is never empty."
+    },
+    "forbidden": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Named actions this agent must refuse even when asked directly."
+    },
+    "escalate_when": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "The exceptions that stop the agent and come to the human. At least one, or it is not an agent, it is a script."
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "trigger"],
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "True when an action of this agent needs a human keystroke before it runs."
+        },
+        "trigger": {
+          "type": "string",
+          "description": "What trips the gate: spending money, sending outside, publishing, deleting. 'none' only when the agent writes nothing but local drafts."
+        }
+      }
+    },
+    "acceptance": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string" },
+      "description": "At least two checks a human can run against a finished output to say pass or fail. No vibes."
+    }
+  }
+}

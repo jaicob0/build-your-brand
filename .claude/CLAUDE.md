@@ -7,7 +7,7 @@ lesson at a time, by typing `/build:NN` commands themselves.
 
 - **Do not begin any lesson, run any script, or do any research until
   the student types the lesson's command** (`/build:01-setup` through
-  `/build:10-grow`) or explicitly asks for it in their own words.
+  `/build:13-grow`) or explicitly asks for it in their own words.
 - When a session opens in this repo and the student hasn't asked for
   anything yet, the correct response is to greet them briefly, tell
   them Lesson 1 is `/build:01-setup`, and wait. Nothing else.
@@ -36,7 +36,7 @@ lesson at a time, by typing `/build:NN` commands themselves.
   `Ship it? [y/N]` prompt for that specific deploy. Show them
   exactly what will run first. `n` means stop — no deploy, no
   retry, no asking again in the same lesson.
-- **Deploy path selection (Lesson 9):** detect what's installed and
+- **Deploy path selection (Lesson 12):** detect what's installed and
   authenticated (`vercel whoami`, `netlify status`, `gh auth
   status`) before proposing anything. Offer, in order: Vercel,
   Netlify, gh + GitHub Pages. If nothing is set up, say so and
@@ -54,8 +54,30 @@ lesson at a time, by typing `/build:NN` commands themselves.
   terminal for a skill, never run `claude -p`, never spawn a nested
   `claude`. Print mode cannot interview, cannot present options and
   wait, and cannot gate.
+- The one exception is the unattended run in Lesson 11, where
+  `scripts/hermes_run.py --go` calls print mode on purpose: nobody is
+  in the room, so there is nothing to interview. You never call it
+  with `--go` yourself on the student's behalf. The timer does, or the
+  student does.
 - The interview in `brand-foundation` and the option pick in
   `design-tokens` are conversations here. Ask, then stop and wait.
+
+## Scheduling (Lesson 11)
+
+- **Never install a launchd job** until the student has read the
+  printed plist in this session and said to install it. Print first,
+  with `scripts/hermes_schedule.py`; `--install` is a separate
+  command, never the same breath.
+- Never schedule a gated agent. The script refuses it; do not work
+  around the refusal, and do not edit a spec to get past it.
+- Never schedule more than one agent in the lesson, and never one
+  whose escalation rules have not fired in testing.
+- The three refusals in Lesson 11 STEP 2 are run for real, before
+  anything is scheduled. If one of them executes instead of refusing,
+  stop the lesson and say so plainly. That is a bug, not a step to
+  retry.
+- The stop command goes in the runbook and the student types it once
+  themselves before the lesson closes.
 
 ## The gate
 
@@ -80,6 +102,6 @@ lesson at a time, by typing `/build:NN` commands themselves.
 - Never mention the repo's build history, the author, filming, or
   anything about how this course was made. To the student this is
   simply the course.
-- The one outward link is the course site, at the close of Lessons 9
-  and 10 and on the dashboard. Print it as written. Never state a
+- The one outward link is the course site, at the close of Lessons 12
+  and 13 and on the dashboard. Print it as written. Never state a
   price, a seat count or a deadline; the site carries those.

@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 2: The evidence. The interview, then sour
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 2 OF 10 · THE EVIDENCE**
+**LESSON 2 OF 13 · THE EVIDENCE**
 Thirty to forty minutes, most of it Claude searching. You leave with your answers on file and a sourced dossier you have read.
 
 ---

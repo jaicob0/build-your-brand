@@ -1,10 +1,11 @@
 # Build Your Brand
 
-**Free. 10 lessons, ~2.5 hours.** Cold clone to a researched brand, a
-design system, a visual brand guide, a hero, a one-page site and one
-finished asset — entirely inside Claude Code, with a human approval
-gate on anything that spends money, and a dated record of every
-decision, including the ones you said no to.
+**Free. 13 lessons, ~4 hours.** Cold clone to a researched brand, a
+design system, a visual brand guide, a hero, a one-page site, one
+finished asset, agents that own a job and an operations layer that runs
+without you — entirely inside Claude Code, with a human approval gate
+on anything that spends money, and a dated record of every decision,
+including the ones you said no to.
 
 It is the free, complete first function of **The Creative Architect**
 course: https://thecreativearchitect.uk
@@ -25,7 +26,7 @@ you need to read, choose or approve. Don't run the lessons through
 
 | # | Command | What it does |
 |---|---|---|
-| 1 | `/build:01-setup` | The toolchain: tools confirmed, nine skills visible, dashboard reading the disk |
+| 1 | `/build:01-setup` | The toolchain: tools confirmed, twelve skills visible, dashboard reading the disk |
 | 2 | `/build:02-research` | The evidence: the interview, then sourced research, `deepresearch.md` first |
 | 3 | `/build:03-foundation` | The contract: validate the foundation, read every file, correct what isn't you |
 | 4 | `/build:04-design` | The tokens: choose a direction from real options, lock `design.md` |
@@ -33,10 +34,13 @@ you need to read, choose or approve. Don't run the lessons through
 | 6 | `/build:06-hero` | The face: a hero still through the gate, inspected for fabricated text; video optional |
 | 7 | `/build:07-website` | The storefront: a one-page site, words first, styled from `design.md` |
 | 8 | `/build:08-assets` | The gate: a typed brief, a gated build, one asset and one refusal on record |
-| 9 | `/build:09-done` | The record: review everything, ship the site if you want, name the pattern |
-| 10 | `/build:10-grow` | The engines: ads through the gate, a belief-mapped email sequence, rendered content |
+| 9 | `/build:09-agents` | The cast: agents that own one job, with an allowlist and named escalations |
+| 10 | `/build:10-dashboard` | Mission Control: one view in your own tokens, reading your disk |
+| 11 | `/build:11-hermes` | The layer: scheduled, allowlisted, three refusals proved before anything runs |
+| 12 | `/build:12-done` | The record: review everything, ship the site if you want, name the pattern |
+| 13 | `/build:13-grow` | The engines: ads through the gate, a belief-mapped email sequence, rendered content |
 
-Lessons 1 to 9 take about two and a half hours. Lesson 10 is another
+Lessons 1 to 12 take about three and a half hours. Lesson 13 is another
 thirty to forty-five minutes and can be run any time after.
 
 ## What you need
@@ -48,10 +52,11 @@ thirty to forty-five minutes and can be run any time after.
   hour straight.
 - **Python 3.**
 - **Google Chrome** at its standard path — it renders the brand guide
-  PDF and the Lesson 10 emails and carousels.
+  PDF, the Lesson 10 dashboard check, and the Lesson 13 emails and
+  carousels.
 - **poppler** for the PDF check in Lesson 5: `brew install poppler`.
 - **A free ChatGPT account**, logged into your browser. Lesson 6,
-  Lesson 8 and the ad plates in Lesson 10 generate images there — free.
+  Lesson 8 and the ad plates in Lesson 13 generate images there — free.
   Free tiers have daily generation limits; hitting one just means
   finishing tomorrow. Everything else runs without it, and the site
   falls back to a CSS hero.
@@ -67,7 +72,7 @@ Free stays the default; the whole course runs without it.
 ## What's in the repo
 
 ```
-.claude/commands/build/   the ten /build: slash-command lessons
+.claude/commands/build/   the thirteen /build: slash-command lessons
 .claude/skills/
   brand-foundation/       interview (intake.md) -> real web research ->
                           nine files per brand: intake, copywriter
@@ -92,6 +97,17 @@ Free stays the default; the whole course runs without it.
   brand-website/          foundation + necessary-beliefs.md (one section
                           per belief) + design.md + hero -> a single
                           self-contained index.html with its own assets/
+  agent-forge/            a named job -> typed agent_spec.json (allowlist,
+                          forbidden list, escalations, acceptance checks)
+                          -> AGENT.md in the brand voice -> two real runs:
+                          one that worked, one that stopped and escalated
+  mission-control/        tiles with a source each -> mission_status.py
+                          reading records/ -> an index.html in your own
+                          design.md tokens, every placeholder labelled,
+                          rendered and looked at
+  hermes-ops/             agents + dashboard -> posture read back, three
+                          refusals proved, one agent on a launchd timer,
+                          a runbook with the stop command at the top
   ad-factory/             research-mined angles -> Meta-ready copy bank
                           -> gated text-free plates + brand-locked HTML
                           overlay (never image-model text)
@@ -100,9 +116,9 @@ Free stays the default; the whole course runs without it.
   content-engine/         pillars + sourced ideas -> carousels built as
                           HTML and rendered to PNG + captions + calendar
 .claude/settings.json     the permission rules that make the gate hold
-schema/                   brand_foundation.schema.json, creative_brief.schema.json
+schema/                   brand_foundation, creative_brief, agent_spec
 scripts/
-  validate_brief.py       stdlib-only schema validator (both schemas)
+  validate_brief.py       stdlib-only schema validator (all three schemas)
   approval_gate.py        the human approval gate — the only path to a
                           build, on either engine
   collect_asset.py        verifies your ChatGPT download, installs the
@@ -111,6 +127,10 @@ scripts/
                           real credits)
   dashboard_status.py     writes status.json from what is actually on disk
   serve_dashboard.py      serves dashboard.html, refreshes on load
+  hermes_run.py           runs one agent under its own spec: allowlist and
+                          gate enforced, a dated record either way
+  hermes_schedule.py      writes the launchd job, prints by default,
+                          installs only when you ask, refuses gated agents
 dashboard.html            build-progress view, reads status.json only
 records/                  everything the skills write (gitignored; empty
                           folders tracked)
@@ -138,6 +158,20 @@ records/                  everything the skills write (gitignored; empty
 - **Brand Website** reads the foundation, the beliefs, `design.md` and
   the hero if one exists. Copy first, then styled. One file plus its
   own `assets/` folder, so it deploys as-is.
+- **Agent Forge** takes a job you do by hand every week and writes it
+  down as a typed spec: what it may read, the one place it writes, the
+  tools it is allowed, what it must refuse, and what it stops for. An
+  agent only counts as built once it has done a real task and handed
+  one back.
+- **Mission Control** builds your own dashboard from `design.md`. Every
+  tile names the file behind it, anything not live is labelled a
+  placeholder in the tile, and the agent feed comes straight out of
+  `records/agents/`.
+- **Hermes** ties the two together and puts one agent on a timer in
+  your own environment. Three refusals are proved first: a tool off the
+  allowlist, a gated agent asked to run unattended, and an agent that
+  does not exist. The runbook opens with the stop command, and you type
+  it once before you walk away.
 
 Nothing in this loop invents a claim, a testimonial or a stat that
 isn't in the foundation or the research file. If a section needs
@@ -177,12 +211,13 @@ Everything the skills write — your intake with its pricing, your
 competitor research, your brand foundation, your assets, your records —
 is gitignored. So are `design.md` and the brand guide at the repo root.
 If you fork this repo and push, none of that leaves your machine.
-Lesson 9 deploys only `records/website/<brand_id>/`, never this repo.
+Lesson 12 deploys only `records/website/<brand_id>/`, never this repo.
 
 ## Serving the site or dashboard
 
 ```bash
 python3 scripts/serve_dashboard.py     # -> localhost:8787/dashboard.html
+python3 scripts/serve_dashboard.py 8788  # -> .../records/mission-control/index.html
 python3 -m http.server 8000            # -> localhost:8000/records/website/<brand_id>/index.html
 ```
 

@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 7: The storefront. A one-page site, words
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 7 OF 10 · THE STOREFRONT**
+**LESSON 7 OF 13 · THE STOREFRONT**
 About twenty minutes. You leave with a one-page site running locally with nothing on it you can't back.
 
 ---

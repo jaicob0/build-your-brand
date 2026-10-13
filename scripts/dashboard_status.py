@@ -2,8 +2,8 @@
 """Write dashboard status.json by checking what's actually in records/.
 
 Real-file-based, not self-reported: a stage counts as done only if its
-output files genuinely exist on disk. Nine stages, matching
-.claude/commands/build/01-setup.md through 09-done.md.
+output files genuinely exist on disk. Thirteen stages, matching
+.claude/commands/build/01-setup.md through 13-grow.md.
 
 Usage:
   python3 scripts/dashboard_status.py
@@ -28,6 +28,9 @@ def main() -> int:
     runs_dir = ROOT / "records" / "runs"
     website_dir = ROOT / "records" / "website"
     assets_dir = ROOT / "records" / "assets"
+    agents_dir = ROOT / "records" / "agents"
+    mc_dir = ROOT / "records" / "mission-control"
+    ops_runs_dir = ROOT / "records" / "ops" / "runs"
     design_md = ROOT / "design.md"
     guide_html = ROOT / "brand-guide.html"
     guide_pdf = ROOT / "brand-guide.pdf"
@@ -66,7 +69,27 @@ def main() -> int:
                 for p in runs_dir.glob("*.json")
             ) if runs_dir.exists() else False
         ),
-        # Lesson 10: any of the three engine outputs on disk.
+        # Lesson 9: an agent counts as built only with a VALID-shaped spec
+        # AND a run on record — a spec on its own is a document.
+        "agents": (
+            has_files(agents_dir, "*/spec.json")
+            and has_files(agents_dir, "*/runs/*.json")
+        ),
+        # Lesson 10: the student's own dashboard, plus the render they
+        # were asked to look at.
+        "dashboard": (
+            (mc_dir / "index.html").exists()
+            and (mc_dir / "preview.png").exists()
+        ),
+        # Lesson 11: the layer counts as live only with refusals on
+        # record and a runbook holding the stop command.
+        "hermes": (
+            any(
+                json.loads(p.read_text()).get("decision", "").startswith("refused")
+                for p in ops_runs_dir.glob("*.json")
+            ) if ops_runs_dir.exists() else False
+        ) and (ROOT / "records" / "ops" / "RUNBOOK.md").exists(),
+        # Lesson 13: any of the three engine outputs on disk.
         "grow": (
             ROOT.joinpath("records/ads").exists()
             and any(ROOT.joinpath("records/ads").glob("*/ad-concepts.md"))
@@ -77,12 +100,15 @@ def main() -> int:
             ROOT.joinpath("records/content").exists()
             and any(ROOT.joinpath("records/content").glob("*/calendar.md"))
         ),
-        # Lesson 9: no new artifact of its own — done once everything
+        # Lesson 12: no new artifact of its own — done once everything
         # upstream is done.
         "done": False,  # computed below
     }
     status["done"] = all(
-        status[k] for k in ("research", "foundation", "guide", "design", "hero", "website", "assets")
+        status[k] for k in (
+            "research", "foundation", "guide", "design", "hero", "website",
+            "assets", "agents", "dashboard", "hermes",
+        )
     )
 
     out_path = ROOT / "status.json"

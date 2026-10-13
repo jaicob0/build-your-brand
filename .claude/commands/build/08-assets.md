@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 8: The gate. A typed brief, a gated build
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 8 OF 10 · THE GATE**
+**LESSON 8 OF 13 · THE GATE**
 About fifteen minutes. You leave with one real asset and one refusal, both on record.
 
 ---
@@ -85,7 +85,7 @@ you are the proof step. A broken rule means a tighter brief and a
 regeneration, and both attempts stay on record.
 
 One honest note: this lesson lets the image model render your headline
-so you can see how it does. Lesson 10 does it the production way, a
+so you can see how it does. Lesson 13 does it the production way, a
 text-free plate with type laid over it afterwards, because image
 models garble text often enough that ads can't depend on it.
 
@@ -136,5 +136,5 @@ in rather than retrying.
 - The pattern: decision split from execution, a typed contract between
   them, a human at the step that costs money, a record either way
 
-Next: `/build:09-done`. Look at everything you built, and the pattern
-underneath it.
+Next: `/build:09-agents`. The same shape, run on the work that eats
+your week.

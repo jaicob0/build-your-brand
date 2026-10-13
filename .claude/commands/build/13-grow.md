@@ -1,8 +1,8 @@
 ---
-description: "Build Your Brand, Lesson 10: The engines. Ads, email and content that read the same foundation, every claim sourced, every generation gated."
+description: "Build Your Brand, Lesson 13: The engines. Ads, email and content that read the same foundation, every claim sourced, every generation gated."
 ---
 
-# /build:10-grow
+# /build:13-grow
 
 ```
      ██  ▓▓▓▓▓  ▓▓  ██████  ██████  ██████
@@ -14,17 +14,17 @@ description: "Build Your Brand, Lesson 10: The engines. Ads, email and content t
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 10 OF 10 · THE ENGINES**
+**LESSON 13 OF 13 · THE ENGINES**
 Thirty to forty-five minutes; run one engine or all three. You leave with a launch-ready ad set, a belief-mapped email sequence, and two weeks of rendered content, whichever you chose.
 
 ---
 
 ## The brand exists. Now it has to show up.
 
-Lessons 1 to 9 built the brand. This lesson runs the engines that put
-it in front of people. Three of them, all reading the foundation the
-site was built from, so the angle in an ad and the argument on the
-page come from the same evidence.
+Lessons 1 to 12 built the brand and the layer that runs it. This
+lesson runs the engines that put it in front of people. Three of them,
+all reading the foundation the site was built from, so the angle in an
+ad and the argument on the page come from the same evidence.
 
 | Engine | You get | Spend |
 |---|---|---|
@@ -185,7 +185,7 @@ just built plugs in as the first function.
 
 This is the moment you understand it best. Use it.
 
-**Build yours: https://thecreativearchitect.uk/?src=lesson10**
+**Build yours: https://thecreativearchitect.uk/?src=lesson13**
 
 > **RUN (Claude, in this session):** Print that link on its own line so
 > it can be clicked. Say nothing about price or seat numbers; the page
@@ -195,7 +195,7 @@ This is the moment you understand it best. Use it.
 
 ## Two smaller moves, for when you're back
 
-1. **Ship the site**, if you haven't — `/build:09-done`, STEP 2.
+1. **Ship the site**, if you haven't — `/build:12-done`, STEP 2.
 2. **Run this on your real brand.** Start again at
    `/build:02-research`. The engines above run off whatever
    foundation exists, so a second brand costs you the research and

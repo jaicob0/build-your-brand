@@ -14,7 +14,7 @@ description: "Build Your Brand, Lesson 5: The book. Build the visual brand guide
           T H E   C R E A T I V E   A R C H I T E C T
 ```
 
-**LESSON 5 OF 10 · THE BOOK**
+**LESSON 5 OF 13 · THE BOOK**
 About fifteen minutes. You leave with a scrollable brand book in HTML and PDF that you've actually looked at.
 
 ---

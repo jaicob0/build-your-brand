@@ -61,18 +61,18 @@
 ██   ██ <span class="ai">██   ██</span> <span class="ai">██</span> ██      ██    ██ ██   ██
  █████  <span class="ai">██   ██</span> <span class="ai">██</span>  ██████  ██████  ██████<span class="title">          T H E   C R E A T I V E   A R C H I T E C T</span></pre>
   <h1>Build Progress</h1>
-  <div class="sub">Cold clone to finished on-brand asset. Refresh after each stage to see it update — this reads directly off the files in <code>records/</code>.</div>
+  <div class="sub">Cold clone to a brand, a site, agents and a layer that runs without you. Refresh after each stage to see it update — this reads directly off the files in <code>records/</code>.</div>
 
   <div class="bar-wrap">
     <div class="bar"><div class="fill" id="fill"></div></div>
-    <div class="bar-num" id="barnum">0<small>/10</small></div>
+    <div class="bar-num" id="barnum">0<small>/13</small></div>
   </div>
   <div class="meta" id="statusline">checking records/ …</div>
 
   <div class="stages" id="stages"></div>
 
   <div class="complete" id="complete" hidden>
-    <div class="k">Nine of nine · on record</div>
+    <div class="k">Thirteen of thirteen · on record</div>
     <div class="big">You ran the pattern on a brand. Now run it on the business.</div>
     <p>A named owner for every job. A gate on every spend. A date on every decision. Seven checks before it counts as done. The Creative Architect course does what you just did, for every function you own, and this brand plugs in as the first.</p>
     <a class="cta" href="https://thecreativearchitect.uk/?src=dashboard">Build yours</a>
@@ -88,7 +88,7 @@
 
 <script>
 const STAGES = [
-  {key: "setup", title: "Setup", cmd: "/build:01-setup", desc: "Toolchain confirmed, nine skills visible, dashboard reading the disk"},
+  {key: "setup", title: "Setup", cmd: "/build:01-setup", desc: "Toolchain confirmed, twelve skills visible, dashboard reading the disk"},
   {key: "research", title: "Deep research", cmd: "/build:02-research", desc: "Real research, sourced — deepresearch.md lands first"},
   {key: "foundation", title: "Brand foundation", cmd: "/build:03-foundation", desc: "Nine files + brand_foundation.json, validated"},
   {key: "design", title: "design.md", cmd: "/build:04-design", desc: "A visual direction chosen from real options — exact hex, fonts, voice"},
@@ -96,8 +96,11 @@ const STAGES = [
   {key: "hero", title: "The hero", cmd: "/build:06-hero", desc: "Still through the gate, film-safety-checked (video optional)"},
   {key: "website", title: "The website", cmd: "/build:07-website", desc: "Copy-first, design.md-driven, hero-aware"},
   {key: "assets", title: "Direction and production", cmd: "/build:08-assets", desc: "Typed brief, gate, one built + one rejected on record"},
-  {key: "done", title: "What you built", cmd: "/build:09-done", desc: "Every file reviewed, the pattern, ship it live if you want"},
-  {key: "grow", title: "Grow — the engines", cmd: "/build:10-grow", desc: "Ads, email, content — the brand keeps showing up"}
+  {key: "agents", title: "The cast", cmd: "/build:09-agents", desc: "Agents that own one job — allowlist, escalations, one refusal on record"},
+  {key: "dashboard", title: "Mission Control", cmd: "/build:10-dashboard", desc: "Your own view, in your own tokens, reading your disk"},
+  {key: "hermes", title: "Hermes — the layer", cmd: "/build:11-hermes", desc: "Scheduled, allowlisted, three refusals proved, a stop command you typed"},
+  {key: "done", title: "What you built", cmd: "/build:12-done", desc: "Every file reviewed, the pattern, ship it live if you want"},
+  {key: "grow", title: "Grow — the engines", cmd: "/build:13-grow", desc: "Ads, email, content — the brand keeps showing up"}
 ];
 
 async function load() {
